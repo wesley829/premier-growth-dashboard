@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premier Solutions · Growth Dashboard</title>
+<style>
+:root{
+  /* ---- BRAND SLOTS ----------------------------------------------------
+     Three colours drive the whole file. Change them here, or use the
+     Brand control in the header bar to match the Premier site exactly.
+     --navy  = deep brand colour  (header, headings, primary buttons)
+     --gold  = accent             (rules, eyebrows, highlights)
+     --linen = page surface       (background behind the cards)
+     Values below are sampled from premiersolutionsweightloss.com:
+     ink navy #101B31, sage #7EA46B, cool off-white #F6F8FA.          */
+  --navy:#101B31; --navy2:#2C3A54; --ink:#1E2533; --ink2:#4A5568;
+  --linen:#F6F8FA; --paper:#FFFFFF; --tint:#FBFCFD; --tint2:#EDF0F4;
+  --gold:#7EA46B; --gold2:#5A7A4C; --line:#E2E6EC; --line2:#C9D0D9;
+  --mute:#5F6B7A; --dim:#8A94A3;
+  --green:#2E6B4F; --amber:#C0761C; --red:#A8402F;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,Helvetica,sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,Helvetica,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --pad:clamp(14px,3.5vw,44px);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--linen);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.018em;color:var(--navy)}
+p{margin:0 0 .8em}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--pad)}
+.eyebrow{font-family:var(--ui);font-size:10px;letter-spacing:.19em;text-transform:uppercase;color:var(--gold2);font-weight:600}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.g{color:var(--green)}.a{color:var(--amber)}.r{color:var(--red)}.mu{color:var(--mute)}
+
+/* ---------- document header ---------- */
+header.top{position:sticky;top:0;z-index:40;background:var(--navy);border-bottom:2px solid var(--gold)}
+.top-in{display:flex;align-items:center;gap:18px;padding:14px 0;flex-wrap:wrap}
+.mark{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.01em;color:#F4F1EA;white-space:nowrap}
+.mark span{display:block;font-size:9.5px;font-weight:400;letter-spacing:.19em;text-transform:uppercase;color:rgba(244,241,234,.62);margin-top:3px}
+.weekpick{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}
+.weekpick .eyebrow{color:rgba(244,241,234,.6)}
+.weekpick select{width:auto;min-width:190px;background:rgba(255,255,255,.07);border-color:rgba(244,241,234,.28);color:#F4F1EA}
+.weekpick .btn{background:rgba(255,255,255,.07);border-color:rgba(244,241,234,.28);color:#F4F1EA}
+.weekpick .btn:hover{background:rgba(255,255,255,.16)}
+nav.tabs{display:flex;gap:0;overflow-x:auto;background:var(--paper);border-bottom:1px solid var(--line);scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);
+ font-family:var(--ui);font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:14px 18px;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:var(--navy)}
+nav.tabs button[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--gold)}
+
+.banner{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:13px 16px;margin:20px 0 0}
+.banner p{margin:0;font-size:13px;color:var(--ink2);max-width:80ch}
+.banner b{color:var(--navy)}
+.bnbtns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+.panel{display:none;padding:26px 0 80px}
+.panel.on{display:block}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px}
+.card h3{font-size:20px}
+.sect{display:flex;align-items:baseline;gap:14px;margin:0 0 14px}
+.sect .ln{flex:1;height:1px;background:var(--line2)}
+
+.btn{font-family:var(--ui);font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;background:var(--paper);
+ border:1px solid var(--line2);color:var(--navy);padding:9px 15px;border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--tint2)}
+.btn.solid{background:var(--navy);color:#F4F1EA;border-color:var(--navy)}
+.btn.solid:hover{background:var(--navy2)}
+.btn.ghost{background:none}
+input,select,textarea{font-family:var(--mono);font-size:13px;background:var(--paper);border:1px solid var(--line2);color:var(--ink);padding:7px 9px;width:100%;border-radius:5px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:0}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+label.fld{display:block}
+label.fld i{font-style:normal;display:block;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);margin-bottom:5px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);padding:0 10px 9px 0;border-bottom:1px solid var(--navy)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tr.sysrow td{background:var(--tint2);font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);padding:10px;border-bottom:1px solid var(--line2)}
+
+/* ---------- status board ---------- */
+.board{display:grid;grid-template-columns:minmax(280px,1.05fr) 2fr;gap:16px;align-items:start}
+.headline{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:8px;padding:24px}
+.headline .big{font-family:var(--display);font-size:clamp(36px,5vw,48px);font-weight:600;line-height:1;letter-spacing:-.035em;color:var(--navy);font-variant-numeric:tabular-nums}
+.headline .big.g{color:var(--green)}.headline .big.a{color:var(--amber)}.headline .big.r{color:var(--red)}
+.headline .sub{font-family:var(--mono);font-size:11.5px;color:var(--mute);margin-top:9px}
+.gauge{height:8px;background:var(--tint2);overflow:hidden;margin:16px 0 6px;position:relative;border:1px solid var(--line);border-radius:5px}
+.gauge .f{height:100%;transition:width .4s}
+.gauge .tick{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--navy)}
+.hstat{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:18px}
+.hstat div{background:var(--paper);padding:13px 14px}
+.hstat i{font-style:normal;display:block;font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}
+.hstat b{display:block;font-family:var(--mono);font-size:17px;font-weight:500;margin-top:5px;color:var(--navy)}
+.hstat b.g{color:var(--green)}.hstat b.a{color:var(--amber)}.hstat b.r{color:var(--red)}
+.hstat small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--mute);margin-top:3px}
+.hstat b input{font-size:16px;padding:3px 6px}
+.hstat i input{font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);background:none;border:0;padding:0;height:14px}
+.hstat i input:focus{outline:1px solid var(--gold)}
+.hstat.dest div:first-child{background:var(--tint)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--line2);
+ padding:15px 16px 16px;border-radius:8px;text-align:left;color:inherit;font:inherit;cursor:pointer;min-height:150px}
+.tile:hover{background:var(--tint)}
+.tile[aria-expanded="true"]{background:var(--tint);box-shadow:inset 0 0 0 1px var(--line2)}
+.tile.G{border-top-color:var(--green)}.tile.A{border-top-color:var(--amber)}.tile.R{border-top-color:var(--red)}.tile.U{border-top-color:var(--line2)}
+.tile .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tile .t{display:block;font-family:var(--display);font-size:16px;font-weight:600;letter-spacing:-.015em;line-height:1.25;color:var(--navy)}
+.tile .o{display:block;font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--mute);margin-top:5px}
+.tile .foot{margin-top:auto;padding-top:11px;border-top:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tile .sc{font-family:var(--mono);font-size:21px;font-weight:500;line-height:1}
+.tile .hl{font-family:var(--mono);font-size:10.5px;color:var(--mute);line-height:1.3;text-align:right}
+.tile .hl b{color:var(--navy);font-weight:500}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.dot.G{background:var(--green)}.dot.A{background:var(--amber)}.dot.R{background:var(--red)}.dot.U{background:var(--line2)}
+@media (max-width:1080px){.tiles{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.tiles{grid-template-columns:1fr}.tile{min-height:0}}
+.constraint{margin-top:14px;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:16px 18px;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.constraint b{font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:-.015em;color:var(--navy)}
+.constraint span{color:var(--ink2);font-size:14px;max-width:82ch}
+.chainflow{display:flex;flex-wrap:wrap;margin-top:14px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--line)}
+.chainflow div{flex:1 1 130px;padding:14px 15px;background:var(--paper);margin-right:1px}
+.chainflow div:last-child{margin-right:0}
+.chainflow i{font-style:normal;display:block;font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}
+.chainflow b{display:block;font-family:var(--mono);font-size:17px;font-weight:500;margin-top:5px;color:var(--navy)}
+.chainflow small{display:block;font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:2px}
+.drill{margin-top:14px}
+
+/* ---------- misc ---------- */
+.trend{font-family:var(--mono);font-size:11.5px}
+.pill{font-family:var(--ui);font-size:8.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--line2);color:var(--gold2)}
+.mini{font-size:12.5px;color:var(--ink2);margin-top:12px;line-height:1.6}
+.mini b{color:var(--navy);font-weight:600}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.fldgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px}
+.bridge{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bridge div{background:var(--paper);padding:16px}
+.bridge div.out{background:var(--tint)}
+.bridge i{font-style:normal;display:block;font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}
+.bridge b{display:block;font-family:var(--mono);font-size:19px;font-weight:500;margin-top:5px;color:var(--navy)}
+.bridge b.g{color:var(--green)}.bridge b.r{color:var(--red)}
+.bridge small{display:block;font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:2px}
+.funnel{display:grid;gap:4px}
+.fstep{display:grid;grid-template-columns:126px 1fr 150px;gap:12px;align-items:center}
+.fstep .lb{font-family:var(--ui);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.fstep .bar{height:28px;background:var(--tint2);position:relative;overflow:hidden;border:1px solid var(--line);border-radius:5px}
+.fstep .fill{height:100%;background:var(--navy);transition:width .35s}
+.fstep .fill.warn{background:var(--red)}
+.fstep .bar span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:12px;color:#F4F1EA;font-weight:500}
+.fstep .rt{font-family:var(--mono);font-size:11px;color:var(--mute);text-align:right}
+.fstep .rt b{color:var(--red);font-weight:500}
+.chartwrap{overflow-x:auto}
+svg .axis{stroke:var(--line2)}
+svg .tgt{stroke:var(--navy);stroke-dasharray:4 3}
+svg text{font-family:var(--mono);font-size:10px;fill:var(--mute)}
+.spark td{padding:7px 10px 7px 0}
+.entrygroup{border-top:1px solid var(--line);padding-top:16px;margin-top:18px}
+.entrygroup h4{font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px}
+.ragsel{display:flex;gap:4px}
+.ragsel button{width:30px;height:26px;border:1px solid var(--line2);background:var(--paper);cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--mute)}
+.ragsel button:hover{background:var(--tint2)}
+.ragsel button[aria-pressed="true"][data-v="G"]{background:var(--green);color:#fff;border-color:var(--green)}
+.ragsel button[aria-pressed="true"][data-v="A"]{background:var(--amber);color:#fff;border-color:var(--amber)}
+.ragsel button[aria-pressed="true"][data-v="R"]{background:var(--red);color:#fff;border-color:var(--red)}
+.hasdef{border-bottom:1px dotted var(--line2);cursor:help}
+.weeknote{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:13px 16px}
+.weeknote.past{border-left-color:var(--amber);background:#FBF7EC}
+.weeknote b{font-size:15px;color:var(--navy)}
+.weeknote span{font-size:13.5px;color:var(--ink2)}
+.ragkey{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:14px}
+.ragkey div{background:var(--tint);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.ragkey b{display:inline-block;margin-left:7px;font-size:13.5px;color:var(--navy)}
+.ragkey span:last-child{display:block;margin-top:6px;font-size:12.5px;color:var(--ink2);line-height:1.55}
+.ragfix{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:10px 0 4px}
+
+/* ---------- $167k bridge ---------- */
+.stackbar{display:flex;height:34px;border:1px solid var(--line2);border-radius:6px;overflow:hidden;margin:4px 0 16px;background:var(--tint2)}
+.stackbar div{position:relative;min-width:0;transition:width .35s}
+.stackbar div span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.06em;white-space:nowrap;color:#F4F1EA}
+.stackbar div.gap{background:repeating-linear-gradient(45deg,var(--tint2),var(--tint2) 6px,var(--paper) 6px,var(--paper) 12px)}
+.stackbar div.gap span{color:var(--mute)}
+.b167 tbody input{width:110px;text-align:right}
+
+.brandbar{display:none;gap:14px;flex-wrap:wrap;align-items:flex-end;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--gold);padding:14px 16px;margin-top:8px}
+.brandbar.on{display:flex}
+.brandbar label{display:block;font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);margin-bottom:6px}
+.brandbar .sw{display:flex;gap:6px;align-items:center}
+.brandbar input[type=color]{width:38px;height:32px;padding:2px;cursor:pointer}
+.brandbar input[type=text]{width:96px;text-transform:uppercase}
+.brandbar p{margin:0;font-size:12.5px;color:var(--ink2);max-width:44ch}
+
+footer{border-top:2px solid var(--gold);background:var(--navy);margin-top:20px}
+footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.sig{font-size:12.5px;color:rgba(244,241,234,.86);line-height:1.7}
+.sig strong{color:#F4F1EA;font-weight:600}
+.sig .small{font-size:10.5px;color:rgba(244,241,234,.55);letter-spacing:.06em}
+.footmeta{margin-left:auto;text-align:right;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,241,234,.55);line-height:1.9}
+
+@media (max-width:900px){.board{grid-template-columns:1fr}.fstep{grid-template-columns:110px 1fr}.fstep .rt{grid-column:1/-1;text-align:left}.footmeta{margin-left:0;text-align:left}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+ body{background:#fff}
+ .panel{display:block!important;page-break-before:always}
+ header.top,nav.tabs,.bnbtns,footer .btn{display:none!important}
+ footer{background:none;border-top:2px solid var(--gold)}
+ .sig,.footmeta{color:var(--ink)}
+ .sig strong{color:var(--navy)}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-in">
+      <div class="mark">Premier Solutions &amp; Weight Loss <span>Growth Dashboard &nbsp;·&nbsp; Weekly Operating Review &nbsp;·&nbsp; Lakeland, FL</span></div>
+      <div class="weekpick">
+        <span class="eyebrow">Viewing</span>
+        <select id="weekSel" aria-label="Select week"></select>
+        <button class="btn ghost" id="prevW" aria-label="Previous week">‹</button>
+        <button class="btn ghost" id="nextW" aria-label="Next week">›</button>
+        <button class="btn ghost" id="thisW">This week</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-p="status" aria-selected="true">Status</button>
+      <button role="tab" data-p="scorecard">Weekly scorecard</button>
+      <button role="tab" data-p="funnel">Funnel &amp; patients</button>
+      <button role="tab" data-p="money">Financial</button>
+      <button role="tab" data-p="trend">Trend</button>
+      <button role="tab" data-p="entry">Enter the week</button>
+      <button role="tab" data-p="audit">Data confidence</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="banner">
+    <p id="bannerTxt"></p>
+    <div class="bnbtns">
+      <button class="btn ghost" id="clearAll">Clear all data</button>
+      <button class="btn ghost" id="exportBtn">Save to file</button>
+      <button class="btn ghost" id="importBtn">Load and merge files</button>
+      <input type="file" id="importFile" accept="application/json" multiple hidden>
+      <button class="btn ghost" id="cloudBtn">Cloud</button>
+      <button class="btn ghost" id="brandBtn">Brand</button>
+      <button class="btn ghost" onclick="window.print()">Print</button>
+    </div>
+  </div>
+  <div class="brandbar" id="cloudBar">
+    <div style="flex:1 1 320px"><label>Web app URL</label><input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <div><label>Passcode</label><input type="text" id="cloudPass" style="width:130px"></div>
+    <div><label>Your name</label><input type="text" id="cloudWho" style="width:120px" placeholder="Courtney"></div>
+    <button class="btn" id="cloudSync">Sync now</button>
+    <button class="btn ghost" id="cloudOff">Disconnect</button>
+    <p>Everyone uses the same URL and passcode. Entries are pulled in every half minute and pushed up a few seconds after you stop typing, so the team sees one set of numbers.</p>
+  </div>
+  <div class="brandbar" id="brandBar">
+    <div><label>Deep brand colour</label><div class="sw"><input type="color" data-brand="navy" value="#101B31"><input type="text" data-brandhex="navy" value="#101B31"></div></div>
+    <div><label>Accent</label><div class="sw"><input type="color" data-brand="gold" value="#7EA46B"><input type="text" data-brandhex="gold" value="#7EA46B"></div></div>
+    <div><label>Page surface</label><div class="sw"><input type="color" data-brand="linen" value="#F6F8FA"><input type="text" data-brandhex="linen" value="#F6F8FA"></div></div>
+    <button class="btn ghost" id="brandReset">Reset</button>
+    <p>Sample the three colours from premiersolutionsweightloss.com and they apply across every tab. They travel with the file when you save to file.</p>
+  </div>
+</div>
+
+<section class="panel on wrap" id="p-status" role="tabpanel"></section>
+<section class="panel wrap" id="p-scorecard" role="tabpanel"></section>
+<section class="panel wrap" id="p-funnel" role="tabpanel"></section>
+<section class="panel wrap" id="p-money" role="tabpanel"></section>
+<section class="panel wrap" id="p-trend" role="tabpanel"></section>
+<section class="panel wrap" id="p-entry" role="tabpanel"></section>
+<section class="panel wrap" id="p-audit" role="tabpanel"></section>
+
+<footer>
+  <div class="wrapin">
+    <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
+      <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
+    <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
+      <span style="color:var(--gold)">File v1.7 · 2 Sep 2026</span></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const n=v=>(v===""||v==null||isNaN(+v))?null:+v;
+const div=(a,b)=>(a==null||b==null||!b)?null:a/b;
+const money=v=>v==null?"—":(v<0?"-$":"$")+Math.round(Math.abs(v)).toLocaleString("en-US");
+const int=v=>v==null?"—":Math.round(v).toLocaleString("en-US");
+const pctf=v=>v==null?"—":v.toFixed(v<10?1:0)+"%";
+const dec=v=>v==null?"—":v.toFixed(1);
+const FMT={money,int,pct:pctf,dec};
+
+/* ================== MODEL ================== */
+const DEFS={
+ leads:"Every new enquiry received this week, from any source. One person counts once, even if they contact twice.",
+ qualifiedLeads:"Leads that meet the agreed definition of qualified. TO CONFIRM: Premier has not yet agreed what qualified means, so this number is not comparable week to week until it does.",
+ marketingSpend:"Everything spent on generating demand this week. Ad spend plus agency fees.",
+ contacted:"Leads a person actually spoke to or messaged directly. An automated reply does not count.",
+ booked:"Leads who have an appointment in the diary, whatever date it falls on.",
+ cancelled:"Appointments the patient cancelled in advance.",
+ noShow:"Appointments where the patient neither arrived nor cancelled.",
+ attended:"Appointments the patient attended this week.",
+ purchased:"Patients who bought a treatment or started a programme at that visit.",
+ newPatients:"Patients treated this week who had never been treated at Premier before.",
+ returningPatients:"Patients treated this week who had been treated before. Do not include the new patients counted above.",
+ reactivatedPatients:"Patients treated this week who had not visited for 90 days or more.",
+ slotsAvailable:"TO CONFIRM. Proposed: bookable clinical time on the diary this week, counted in one agreed unit. A ten minute injection visit and a forty minute consultation are not the same slot, so agree the unit before this number means anything.",
+ slotsUsed:"Slots from the line above that were filled by a patient who attended.",
+ rebooked:"TO CONFIRM. Proposed: patients who left this week with their next appointment already in the diary. Count patients, not appointments, and exclude anyone whose next visit was already booked before they arrived.",
+ revWeight:"Money collected this week for medical weight loss, GLP-1 programmes and the visits that go with them.",
+ revHRT:"Money collected this week for hormone optimisation, HRT and TRT, whether drafted or paid at the desk.",
+ revAes:"Money collected this week for aesthetics and skin. Injectables, threads, PRP, laser, microneedling and fillers.",
+ revWellness:"Money collected this week for IV infusions, vitamin injections and lab testing.",
+ cogs:"Product and consumables used to deliver this week's revenue. Drugs, vials, needles, filler, kits.",
+ providerCost:"Clinical cost this week. Telemedicine, medical oversight, injectors and any clinical contractor.",
+ opex:"Everything else that ran the clinic this week. Rent, non-clinical wages, software, utilities.",
+ actionsAgreed:"Actions agreed at last week's growth meeting.",
+ actionsCompleted:"How many of those actions were actually done.",
+ experimentsRun:"Measurable growth experiments running this week.",
+ programmePatients:"Patients currently on a monthly programme of any kind. Count each patient once even if they are on two.",
+ programmeStarts:"Patients who began a clinical programme for the first time this week. A treatment event. A patient can appear here and in draft enrolments below, so never add the two together.",
+ draftStarts:"Patients newly put on automatic recurring payment this week, whether new or existing. A payment event, not a treatment event.",
+ programmeCancelled:"Patients who cancelled or stopped a monthly programme this week.",
+ draftScheduled:"Total dollar value of automatic drafts due to be charged this week.",
+ draftCollected:"Total dollar value of drafts that collected successfully this week.",
+ draftFailed:"Total dollar value of drafts that failed or were declined this week.",
+ rev:"Everything collected this week across the four service lines.",
+ gm:"Gross profit as a share of revenue, after product and consumables but before clinical and operating cost.",
+ provPct:"Clinical cost as a share of revenue. Now largely variable, so it should move with demand rather than sit fixed.",
+ ebitda:"What Premier earned this week once product, clinical, marketing and operating costs are taken off.",
+ cpl:"Marketing spend divided by leads received.",
+ cpql:"Marketing spend divided by qualified leads. Only meaningful once qualified is defined.",
+ cac:"Marketing spend divided by new patients treated.",
+ atv:"Revenue divided by patients treated.",
+ util:"Slots used as a share of slots available.",
+ rebookRate:"Patients who left with a next appointment, as a share of patients treated.",
+ churnRate:"Programme cancellations as a share of patients on a programme.",
+ draftRate:"Drafts collected as a share of drafts scheduled.",
+ recurringPct:"Draft revenue as a share of all revenue. The part of the month that does not have to be sold again.",
+ bookingRate:"Bookings as a share of leads contacted.",
+ showRate:"Attended appointments as a share of appointments booked.",
+ purchaseRate:"Purchases as a share of attended appointments.",
+ leadToPurchase:"Purchases as a share of all leads received.",
+ contactRate:"Leads contacted as a share of leads received.",
+ noShowRate:"Non-attendance as a share of appointments booked.",
+ programmeNet:"Programme starts less cancellations.",
+ gpPerPatient:"Gross profit divided by patients treated.",
+ actionRate:"Actions completed as a share of actions agreed.",
+ dataGreen:"Share of measures classified green on the data confidence tab.",
+ patients:"New, returning and reactivated patients added together."
+};
+const tip=k=>(DEFS[k]||"").replace(/"/g,"&quot;");
+const SYS=[
+ {id:"lead",n:"01",t:"Lead generation",o:"Jon",q:"Enough qualified opportunities at an acceptable cost?"},
+ {id:"conv",n:"02",t:"Conversion",o:"Brittany",q:"Are opportunities becoming paying patients?"},
+ {id:"del", n:"03",t:"Delivery",o:"Courtney",q:"Are we using the capacity we have, well?"},
+ {id:"ret", n:"04",t:"Retention & reactivation",o:"Courtney / Brittany",q:"Are patients coming back and buying more?"},
+ {id:"fin", n:"05",t:"Financial performance",o:"Aman",q:"Is the activity making money?"},
+ {id:"mgmt",n:"06",t:"Management & improvement",o:"Courtney + Glow",q:"Are we actually doing what we agreed?"}
+];
+
+const FIELDS=[
+ {g:"Demand · Jon",f:[["leads","Leads received"],["qualifiedLeads","Qualified leads"],["marketingSpend","Marketing spend ($)"]]},
+ {g:"Conversion · Brittany",f:[["contacted","Contacted"],["booked","Appointments booked"],["cancelled","Cancelled"],["noShow","Did not attend"],["attended","Attended"],["purchased","Purchased"]]},
+ {g:"Patients · Brittany / Courtney",f:[["newPatients","New patients"],["returningPatients","Returning patients"],["reactivatedPatients","Reactivated patients"]]},
+ {g:"Delivery · Courtney",f:[["slotsAvailable","Appointment slots available"],["slotsUsed","Slots used"],["rebooked","Left with next appointment"]]},
+ {g:"Revenue by service line · Aman",f:[["revWeight","Medical weight loss, GLP-1 ($)"],["revHRT","Hormone optimisation, HRT ($)"],["revAes","Aesthetics and skin ($)"],["revWellness","Wellness, IV, injections and labs ($)"]]},
+ {g:"Programmes and drafts · Courtney",f:[["programmePatients","Patients on a monthly programme"],["programmeStarts","New clinical programme starts"],["draftStarts","New automatic draft enrolments"],["programmeCancelled","Programmes cancelled"],["draftScheduled","Draft revenue scheduled ($)"],["draftCollected","Draft revenue collected ($)"],["draftFailed","Drafts failed or declined ($)"]]},
+ {g:"Costs · Aman",f:[["cogs","COGS ($)"],["providerCost","Provider and clinical cost ($)"],["opex","Operating costs ($)"]]},
+ {g:"Management · Courtney",f:[["actionsAgreed","Actions agreed last week"],["actionsCompleted","Actions completed"],["experimentsRun","Experiments running"]]}
+];
+
+function D(w){
+ if(!w)return{};
+ const g=k=>n(w[k]);
+ const rev=[g("revWeight"),g("revHRT"),g("revAes"),g("revWellness")].reduce((a,b)=>b==null?a:(a==null?b:a+b),null);
+ const patients=[g("newPatients"),g("returningPatients"),g("reactivatedPatients")].reduce((a,b)=>b==null?a:(a==null?b:a+b),null);
+ const gp=(rev==null||g("cogs")==null)?null:rev-g("cogs");
+ const costs=[g("providerCost"),g("marketingSpend"),g("opex")];
+ const ebitda=(gp==null)?null:gp-(costs.reduce((a,b)=>a+(b||0),0));
+ const r={rev,patients,gp,ebitda,cogs:g("cogs"),providerCost:g("providerCost"),marketingSpend:g("marketingSpend"),opex:g("opex"),
+  leads:g("leads"),qualifiedLeads:g("qualifiedLeads"),contacted:g("contacted"),booked:g("booked"),cancelled:g("cancelled"),
+  noShow:g("noShow"),attended:g("attended"),purchased:g("purchased"),newPatients:g("newPatients"),
+  returningPatients:g("returningPatients"),reactivatedPatients:g("reactivatedPatients"),
+  slotsAvailable:g("slotsAvailable"),slotsUsed:g("slotsUsed"),rebooked:g("rebooked"),experimentsRun:g("experimentsRun"),
+  programmePatients:g("programmePatients"),programmeStarts:g("programmeStarts"),
+  draftScheduled:g("draftScheduled"),draftCollected:g("draftCollected"),draftFailed:g("draftFailed"),
+  draftStarts:g("draftStarts")};
+ const p=(a,b)=>{const v=div(a,b);return v==null?null:v*100};
+ r.gm=p(gp,rev); r.ebitdaPct=p(ebitda,rev); r.provPct=p(g("providerCost"),rev);
+ r.mktPct=p(g("marketingSpend"),rev);
+ r.cpl=div(g("marketingSpend"),g("leads")); r.cpql=div(g("marketingSpend"),g("qualifiedLeads"));
+ r.cac=div(g("marketingSpend"),g("newPatients"));
+ r.contactRate=p(g("contacted"),g("leads")); r.bookingRate=p(g("booked"),g("contacted"));
+ r.showRate=p(g("attended"),g("booked")); r.purchaseRate=p(g("purchased"),g("attended"));
+ r.leadToPurchase=p(g("purchased"),g("leads")); r.noShowRate=p(g("noShow"),g("booked"));
+ r.atv=div(rev,patients); r.util=p(g("slotsUsed"),g("slotsAvailable")); r.rebookRate=p(g("rebooked"),patients);
+ r.actionRate=p(g("actionsCompleted"),g("actionsAgreed"));
+ r.gpPerPatient=div(gp,patients);
+ r.draftRate=p(g("draftCollected"),g("draftScheduled"));
+ r.recurringPct=p(g("draftCollected"),rev);
+ r.avgDraft=div(g("draftCollected"),g("programmePatients"));
+ r.churnRate=p(g("programmeCancelled"),g("programmePatients"));
+ r.programmeNet=(g("programmeStarts")==null&&g("programmeCancelled")==null)?null:(g("programmeStarts")||0)-(g("programmeCancelled")||0);
+ return r;
+}
+
+const M=[
+ {k:"leads",l:"Leads received",s:"lead",o:"Jon",f:"int",d:"hi",core:1},
+ {k:"qualifiedLeads",l:"Qualified leads",s:"lead",o:"Jon",f:"int",d:"hi"},
+ {k:"cpl",l:"Cost per lead",s:"lead",o:"Jon",f:"money",d:"lo",core:1},
+ {k:"cpql",l:"Cost per qualified lead",s:"lead",o:"Jon",f:"money",d:"lo"},
+ {k:"marketingSpend",l:"Marketing spend",s:"lead",o:"Jon",f:"money",d:"info"},
+ {k:"contactRate",l:"Leads contacted",s:"conv",o:"Brittany",f:"pct",d:"hi"},
+ {k:"bookingRate",l:"Booking conversion",s:"conv",o:"Brittany",f:"pct",d:"hi",core:1},
+ {k:"showRate",l:"Attendance rate",s:"conv",o:"Brittany",f:"pct",d:"hi",core:1},
+ {k:"noShowRate",l:"Did not attend",s:"conv",o:"Brittany",f:"pct",d:"lo"},
+ {k:"purchaseRate",l:"Consultation to purchase",s:"conv",o:"Brittany",f:"pct",d:"hi",core:1},
+ {k:"leadToPurchase",l:"Lead to purchase, end to end",s:"conv",o:"Brittany",f:"pct",d:"hi"},
+ {k:"newPatients",l:"New patients",s:"conv",o:"Brittany",f:"int",d:"hi",core:1},
+ {k:"atv",l:"Average spend per patient",s:"conv",o:"Brittany",f:"money",d:"hi",core:1},
+ {k:"util",l:"Capacity utilisation",s:"del",o:"Courtney",f:"pct",d:"hi",core:1},
+ {k:"patients",l:"Patients treated",s:"del",o:"Courtney",f:"int",d:"hi"},
+ {k:"cac",l:"Cost per new patient",s:"del",o:"Courtney",f:"money",d:"lo"},
+ {k:"rebookRate",l:"Rebooked at the chair",s:"ret",o:"Courtney",f:"pct",d:"hi",core:1},
+ {k:"returningPatients",l:"Returning patients",s:"ret",o:"Brittany",f:"int",d:"hi"},
+ {k:"reactivatedPatients",l:"Reactivated patients",s:"ret",o:"Brittany",f:"int",d:"hi",core:1},
+ {k:"programmePatients",l:"Patients on a monthly programme",s:"ret",o:"Courtney",f:"int",d:"hi",core:1},
+ {k:"programmeStarts",l:"New clinical programme starts",s:"ret",o:"Brittany",f:"int",d:"hi"},
+ {k:"draftStarts",l:"New automatic draft enrolments",s:"ret",o:"Courtney",f:"int",d:"hi"},
+ {k:"programmeNet",l:"Net programme movement",s:"ret",o:"Courtney",f:"int",d:"hi"},
+ {k:"churnRate",l:"Weekly programme churn",s:"ret",o:"Courtney",f:"pct",d:"lo",core:1},
+ {k:"rev",l:"Revenue",s:"fin",o:"Courtney",f:"money",d:"hi",core:1},
+ {k:"gm",l:"Gross margin",s:"fin",o:"Aman",f:"pct",d:"hi",core:1},
+ {k:"provPct",l:"Provider cost, % of revenue",s:"fin",o:"Aman",f:"pct",d:"lo"},
+ {k:"draftCollected",l:"Draft revenue collected",s:"fin",o:"Aman",f:"money",d:"hi",core:1},
+ {k:"draftRate",l:"Drafts collected against scheduled",s:"fin",o:"Courtney",f:"pct",d:"hi"},
+ {k:"recurringPct",l:"Draft revenue as % of revenue",s:"fin",o:"Aman",f:"pct",d:"hi"},
+ {k:"draftFailed",l:"Drafts failed or declined",s:"fin",o:"Brittany",f:"money",d:"lo"},
+ {k:"ebitda",l:"Normalised EBITDA",s:"fin",o:"Aman",f:"money",d:"hi",core:1},
+ {k:"gpPerPatient",l:"Gross profit per patient",s:"fin",o:"Aman",f:"money",d:"hi"},
+ {k:"actionRate",l:"Actions completed",s:"mgmt",o:"Courtney",f:"pct",d:"hi"},
+ {k:"experimentsRun",l:"Experiments running",s:"mgmt",o:"Courtney",f:"int",d:"hi"},
+ {k:"dataGreen",l:"Metrics with reliable data",s:"mgmt",o:"Glow",f:"pct",d:"hi"}
+];
+
+/* No default targets. Premier sets each one, with its owner, from its own data. */
+const DEF_TARGETS=(()=>{const o={};M.forEach(x=>{if(x.d!=="info")o[x.k]=""});return o})();
+
+const SKEYS=["leads","qualifiedLeads","marketingSpend","contacted","booked","cancelled","noShow","attended","purchased",
+ "newPatients","returningPatients","reactivatedPatients","slotsAvailable","slotsUsed","rebooked",
+ "revWeight","revHRT","revAes","revWellness","cogs","providerCost","opex","actionsAgreed","actionsCompleted","experimentsRun",
+ "programmePatients","programmeStarts","draftStarts","programmeCancelled","draftScheduled","draftCollected","draftFailed"];
+function ensureCurrentWeek(select){
+ const d=todayMonday();
+ let i=DATA.weeks.findIndex(w=>w.date===d);
+ if(i<0){DATA.weeks.push(blankWeek(d));DATA.weeks.sort((a,b)=>String(a.date).localeCompare(String(b.date)));i=DATA.weeks.findIndex(w=>w.date===d)}
+ if(select)cur=i;
+ return i;
+}
+function blankWeek(date){const w={date:date||todayMonday()};SKEYS.forEach(k=>w[k]="");return w}
+function todayMonday(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
+function wLabel(w){const d=new Date(w.date+"T00:00");return isNaN(d)?"New week":"w/c "+d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}
+
+const LEVERS=[
+ {k:"qualifiedDemand",l:"More qualified opportunities",o:"Jon",d:"Additional qualified enquiries above what the forecast already assumes"},
+ {k:"reactivation",l:"Reactivated patients",o:"Courtney / Brittany",d:"Revenue from the existing database"},
+ {k:"conversion",l:"Better conversion",o:"Brittany",d:"Same leads, more of them booking, attending and buying"},
+ {k:"frequency",l:"More frequent visits",o:"Courtney",d:"Rebooking at the chair and treatment plans rather than single appointments"},
+ {k:"mix",l:"Higher spend and service mix",o:"Aman / Courtney",d:"Price, bundles and mix shifting towards higher margin work"}
+];
+const ZERO_PLAN={qualifiedDemand:"",reactivation:"",conversion:"",frequency:"",mix:""};
+const DESTINATION=167000;
+function freshData(){
+ return{targets:Object.assign({},DEF_TARGETS),destination:DESTINATION,monthlyTarget:"",
+  interimLabel:"Interim target",plan:Object.assign({},ZERO_PLAN),
+  weeks:[blankWeek()],rag:{},actions:{},owners:{},planOwners:{},
+  brand:{navy:"#101B31",gold:"#7EA46B",linen:"#F6F8FA"}};
+}
+let DATA=freshData();
+let cur=DATA.weeks.length-1, openSys=null;
+
+/* ================== METRIC HELPERS ================== */
+function mval(k,i){
+ if(k==="dataGreen"){const t=M.length;let g=0,any=0;
+  M.forEach(x=>{const v=DATA.rag[x.k];if(v){any++;if(v==="G")g++}});
+  return (any&&t)?g/t*100:null}
+ const w=DATA.weeks[i]; if(!w)return null;
+ const d=D(w); const v=d[k]; return (v==null||!isFinite(v))?null:v;
+}
+function attain(m,v){
+ const t=n(DATA.targets[m.k]);
+ if(v==null||t==null||m.d==="info"||!t)return null;
+ return m.d==="lo"?t/v:v/t;
+}
+function rag(a){return a==null?"U":a>=.95?"G":a>=.8?"A":"R"}
+const ownerOf=k=>{const m=M.find(x=>x.k===k);return (DATA.owners&&DATA.owners[k]!=null&&DATA.owners[k]!=="")?DATA.owners[k]:(m?m.o:"")};
+const planOwnerOf=(k,d)=>(DATA.planOwners&&DATA.planOwners[k]!=null&&DATA.planOwners[k]!=="")?DATA.planOwners[k]:d;
+function sysScore(sid,i){
+ const ms=M.filter(m=>m.s===sid); let s=0,c=0;
+ ms.forEach(m=>{const a=attain(m,mval(m.k,i));if(a!=null&&isFinite(a)){s+=Math.max(0,Math.min(a,1.25));c++}});
+ return c?s/c:null;
+}
+function fmtv(m,v){return FMT[m.f](v)}
+function trend(m,i){
+ if(i<1)return{txt:"—",cls:"mu"};
+ const a=mval(m.k,i),b=mval(m.k,i-1);
+ if(a==null||b==null)return{txt:"—",cls:"mu"};
+ const dlt=a-b; if(Math.abs(dlt)<1e-9)return{txt:"level",cls:"mu"};
+ const good=(m.d==="lo")?dlt<0:dlt>0;
+ const arrow=dlt>0?"▲":"▼";
+ const shown=m.f==="pct"?(Math.abs(dlt).toFixed(1)+"pp"):FMT[m.f](Math.abs(dlt)).replace("—","");
+ return{txt:arrow+" "+shown,cls:m.d==="info"?"mu":(good?"g":"r")};
+}
+function monthCtx(i){
+ const w=DATA.weeks[i]; if(!w)return{};
+ const m=(w.date||"").slice(0,7);
+ const inM=DATA.weeks.filter(x=>(x.date||"").slice(0,7)===m);
+ const mtd=inM.reduce((a,x)=>a+(D(x).rev||0),0);
+ const cnt=inM.filter(x=>D(x).rev!=null).length;
+ const eb=inM.reduce((a,x)=>a+(D(x).ebitda||0),0);
+ return{mtd,cnt,eb,forecast:cnt?mtd/cnt*4.33:null,label:m?new Date(m+"-01T00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"}):""};
+}
+const wTarget=()=>{const m=n(DATA.monthlyTarget)||n(DATA.destination);return m?m/4.33:null};
+
+/* ================== STATUS ================== */
+function renderStatus(){
+ const i=cur,w=DATA.weeks[i],d=D(w),mc=monthCtx(i),wt=wTarget();
+ const att=div(d.rev,wt), rg=rag(att);
+ const scores=SYS.map(s=>({s,v:sysScore(s.id,i)}));
+ const worst=scores.filter(x=>x.v!=null&&x.s.id!=="mgmt").sort((a,b)=>a.v-b.v)[0];
+ const gcol=v=>v==null?"var(--dim)":v>=.95?"var(--green)":v>=.8?"var(--amber)":"var(--red)";
+ const head=`<div class="headline">
+   <div class="eyebrow">Revenue, ${wLabel(w)}</div>
+   <div class="big ${rg==="G"?"g":rg==="A"?"a":rg==="R"?"r":""}">${money(d.rev)}</div>
+   <div class="gauge"><div class="f" style="width:${Math.min(100,(att||0)*100)}%;background:${gcol(att)}"></div><div class="tick" style="left:100%"></div></div>
+   <div class="sub">${att!=null?`${(att*100).toFixed(0)}% of the ${money(wt)} weekly target · ${money(d.rev-wt)} variance`:"Enter the week to see performance against target"}</div>
+   <div class="hstat">
+     <div><i>${mc.label||"Month"} to date</i><b>${money(mc.mtd)}</b></div>
+     <div><i>Month forecast</i><b class="${(mc.forecast!=null&&n(DATA.monthlyTarget)&&mc.forecast<n(DATA.monthlyTarget))?"a":""}">${money(mc.forecast)}</b></div>
+     <div><i>EBITDA this week</i><b class="${d.ebitda!=null?(d.ebitda>=0?"g":"r"):""}">${money(d.ebitda)}</b></div>
+     <div><i>Patients treated</i><b>${int(d.patients)}</b></div>
+   </div>
+   <div class="hstat dest">
+     <div><i>Destination · monthly revenue</i><b><input type="number" id="destTarget" value="${DATA.destination}" placeholder="167000"></b><small>${n(DATA.destination)?money(n(DATA.destination)*12)+" a year":"Set the destination"}</small></div>
+     <div><i><input type="text" id="interimLabel" value="${(DATA.interimLabel||"").replace(/"/g,"&quot;")}" aria-label="Interim target label"></i>
+       <b><input type="number" id="monthlyTarget" value="${DATA.monthlyTarget}" placeholder="Set it"></b><small>On the way to ${money(n(DATA.destination))}</small></div>
+   </div></div>`;
+ const tiles=`<div><div class="tiles">${scores.map(({s,v})=>{
+   const r=rag(v),core=M.filter(m=>m.s===s.id&&m.core)[0]||M.filter(m=>m.s===s.id)[0];
+   const cv=mval(core.k,i);
+   return `<button class="tile ${r}" data-sys="${s.id}" aria-expanded="${openSys===s.id}">
+    <span class="top"><span class="t">${s.t}</span><span class="dot ${r}"></span></span>
+    <span class="o">${s.o}</span>
+    <span class="foot"><span class="sc" style="color:${gcol(v)}">${v==null?"—":(v*100).toFixed(0)+"%"}</span>
+     <span class="hl">${core.l} <b>${fmtv(core,cv)}</b></span></span></button>`}).join("")}</div>
+  ${worst?`<div class="constraint" style="border-left-color:${gcol(worst.v)}">
+    <b>Constraint: ${worst.s.t}</b>
+    <span>Lowest attainment across its measures at ${(worst.v*100).toFixed(0)}% of target. Owner: ${worst.s.o}. Adding volume upstream of this will land on the same problem, so fix it first. Management and improvement is scored separately because it measures whether we did what we agreed, not where the commercial machine binds.</span></div>`:""}
+  <div class="chainflow">
+   ${[["Leads",int(d.leads)],["Booked",int(d.booked)],["Attended",int(d.attended)],["Purchased",int(d.purchased)],
+      ["Revenue",money(d.rev)],["Gross profit",money(d.gp)],["EBITDA",money(d.ebitda)]]
+     .map(([a,b],ix)=>`<div><i>${a}</i><b>${b}</b><small>${ix===0?"in":ix===6?(d.ebitdaPct!=null?pctf(d.ebitdaPct)+" margin":"&nbsp;"):"&nbsp;"}</small></div>`).join("")}
+  </div>
+  <div id="drill" class="drill"></div></div>`;
+ $("#p-status").innerHTML=`<div class="board">${head}${tiles}</div>${bridge167()}${noteCard()}`;
+ if(openSys)drill(openSys);
+}
+
+function noteCard(){
+ const w=DATA.weeks[cur]; if(!w||!(w.note||"").trim())return"";
+ return `<div class="card" style="margin-top:14px;border-left:3px solid var(--gold)">
+  <div class="eyebrow" style="margin-bottom:8px">Notes · ${wLabel(w)}</div>
+  <div style="font-size:14.5px;color:var(--ink2);white-space:pre-wrap">${w.note.replace(/</g,"&lt;")}</div></div>`;
+}
+function bridge167(){
+ const dest=n(DATA.destination)||0, mc=monthCtx(cur);
+ const base=mc.forecast||0;
+ const vals=LEVERS.map(l=>n(DATA.plan[l.k])||0);
+ const planned=vals.reduce((a,b)=>a+b,0);
+ const total=base+planned, gap=dest-total;
+ const cols=["#3B4A6B","#54627F","#6E7A93","#8C7E5A","#A59773"];
+ const seg=(w,label,col,cls)=>w<=0?"":`<div class="${cls||""}" style="width:${(w/dest*100).toFixed(2)}%;background:${col||""}"><span>${w/dest>.055?label:""}</span></div>`;
+ const bar=`<div class="stackbar">
+   ${seg(Math.min(base,dest),"Forecast "+money(base),"#1C263D")}
+   ${vals.map((v,i)=>seg(Math.max(0,Math.min(v,Math.max(0,dest-base-vals.slice(0,i).reduce((a,b)=>a+b,0)))),LEVERS[i].l,cols[i])).join("")}
+   ${gap>0?seg(gap,"Unplanned "+money(gap),null,"gap"):""}</div>`;
+ let run=base;
+ const rows=LEVERS.map((l,i)=>{run+=vals[i];
+  return `<tr><td><b>${l.l}</b><div class="mu" style="font-size:12.5px">${l.d}</div></td>
+   <td><input type="text" data-lo="${l.k}" value="${planOwnerOf(l.k,l.o).replace(/"/g,"&quot;")}"></td>
+   <td class="n"><input type="number" data-plan="${l.k}" value="${DATA.plan[l.k]??""}" placeholder="0"></td>
+   <td class="n mu">${dest?pctf(vals[i]/dest*100):"—"}</td>
+   <td class="n">${money(run)}</td></tr>`}).join("");
+ return `<div class="card b167" style="margin-top:14px">
+  <div class="sect"><div class="eyebrow">How we get to ${money(dest)} a month</div><span class="ln"></span>
+   <span class="num" style="font-size:11px;color:${gap>0?"var(--amber)":"var(--green)"}">${gap>0?money(gap)+" unplanned":"Fully planned"}</span></div>
+  ${bar}
+  <table><thead><tr><th style="min-width:240px">Where the revenue comes from</th><th>Owner</th><th class="n">Monthly contribution</th><th class="n">Share of target</th><th class="n">Running total</th></tr></thead>
+   <tbody>
+    <tr><td><b>Current forecast</b><div class="mu" style="font-size:12.5px">${mc.cnt?mc.cnt+" week"+(mc.cnt===1?"":"s")+" recorded in "+(mc.label||"the month"):"No weeks recorded yet"}</div></td>
+     <td><input type="text" data-lo="forecast" value="${planOwnerOf("forecast","Courtney").replace(/"/g,"&quot;")}"></td><td class="n">${money(base)}</td><td class="n mu">${dest?pctf(base/dest*100):"—"}</td><td class="n">${money(base)}</td></tr>
+    ${rows}
+    <tr><td><b>${gap>=0?"Still unplanned":"Planned above target"}</b></td><td><input type="text" data-lo="unplanned" value="${planOwnerOf("unplanned","Rob / Glow").replace(/"/g,"&quot;")}"></td>
+     <td class="n ${gap>0?"a":"g"}">${money(Math.abs(gap))}</td>
+     <td class="n mu">${dest?pctf(Math.abs(gap)/dest*100):"—"}</td><td class="n"><b>${money(Math.max(dest,total))}</b></td></tr>
+   </tbody></table>
+  <div class="mini">${planned?`Each line needs a named owner and a number that can be tested. ${money(planned)} of the gap is currently allocated to someone. ${gap>0?`${money(gap)} is not, which means the target does not yet have a plan behind all of it.`:"The plan now adds up. The question becomes whether each contribution is achievable and what it costs to deliver."}`:"Nothing of the gap is allocated yet. Until each line has an owner and a number, $167,000 is an ambition rather than a plan."}</div></div>`;
+}
+function drill(sid){
+ openSys=sid; const s=SYS.find(x=>x.id===sid),i=cur;
+ $$("#p-status .tile").forEach(t=>t.setAttribute("aria-expanded",String(t.dataset.sys===sid)));
+ $("#drill").innerHTML=`<div class="card"><div class="sect"><div class="eyebrow">Owner: ${s.o}</div><span class="ln"></span>
+   <button class="btn ghost" data-close>Close</button></div>
+  <h3>${s.t}</h3><p class="mu" style="font-size:14px">${s.q}</p>
+  <table><thead><tr><th>Measure</th><th class="n">Target</th><th class="n">Actual</th><th class="n">Variance</th><th class="n">Trend</th><th>Status</th></tr></thead><tbody>
+  ${M.filter(m=>m.s===sid).map(m=>{const v=mval(m.k,i),t=n(DATA.targets[m.k]),a=attain(m,v),r=rag(a),tr=trend(m,i);
+   const varr=(v==null||t==null||m.d==="info")?"—":(m.f==="pct"?((v-t).toFixed(1)+"pp"):FMT[m.f](v-t));
+   return `<tr><td>${m.l}</td><td class="n mu">${m.d==="info"?"—":fmtv(m,t)}</td><td class="n">${fmtv(m,v)}</td>
+    <td class="n ${a==null?"mu":(a>=1?"g":"r")}">${varr}</td><td class="n trend ${tr.cls}">${tr.txt}</td>
+    <td><span class="dot ${r}" style="margin-right:7px"></span>${a==null?"No data":(a*100).toFixed(0)+"%"}</td></tr>`}).join("")}
+  </tbody></table></div>`;
+}
+
+/* ================== SCORECARD ================== */
+let coreOnly=false;
+function renderScorecard(){
+ const i=cur;
+ const rows=SYS.map(s=>{
+  const ms=M.filter(m=>m.s===s.id&&(!coreOnly||m.core));
+  if(!ms.length)return"";
+  return `<tr class="sysrow"><td colspan="7">${s.t} &nbsp;·&nbsp; ${s.o}</td></tr>`+ms.map(m=>{
+   const v=mval(m.k,i),a=attain(m,v),r=rag(a),tr=trend(m,i),t=n(DATA.targets[m.k]);
+   const varr=(v==null||t==null||m.d==="info")?"—":(m.f==="pct"?((v-t).toFixed(1)+"pp"):FMT[m.f](v-t));
+   return `<tr><td><span class="dot ${r}" style="margin-right:8px"></span><span${DEFS[m.k]?` class="hasdef" title="${tip(m.k)}"`:""}>${m.l}</span>${m.core?' <span class="pill">Core</span>':""}</td>
+    <td class="n"><input type="number" data-t="${m.k}" value="${DATA.targets[m.k]??""}" ${m.d==="info"?"disabled":""} style="width:88px;text-align:right"></td>
+    <td class="n"><b>${fmtv(m,v)}</b></td>
+    <td class="n ${a==null?"mu":(a>=1?"g":"r")}">${varr}</td>
+    <td class="n trend ${tr.cls}">${tr.txt}</td>
+    <td><input type="text" data-o="${m.k}" value="${ownerOf(m.k).replace(/"/g,"&quot;")}" placeholder="Owner"></td>
+    <td><input type="text" data-a="${m.k}" value="${(DATA.actions[m.k]||"").replace(/"/g,"&quot;")}" placeholder="Action and owner"></td></tr>`}).join("");
+ }).join("");
+ $("#p-scorecard").innerHTML=`<div class="sect"><h2 style="font-size:26px">Weekly scorecard</h2><span class="ln"></span>
+   <span class="eyebrow">Week</span><select id="scWeek" style="width:auto;min-width:200px"></select>
+   <button class="btn ghost" id="coreTog">${coreOnly?"Show all measures":"Show core 12 only"}</button></div>
+  <p class="mu" style="max-width:80ch;font-size:14px">${wLabel(DATA.weeks[i])}. Targets are editable and apply to every week. Anything without a target cannot have a status, which is usually the first thing to fix.</p>
+  <div class="card" style="margin-top:14px;overflow-x:auto">
+   <table><thead><tr><th style="min-width:230px">Measure</th><th class="n">Target</th><th class="n">Actual</th><th class="n">Variance</th><th class="n">Trend</th><th>Owner</th><th style="min-width:200px">Action this week</th></tr></thead>
+   <tbody>${rows}</tbody></table></div>`;
+ buildWeekSel();
+}
+
+/* ================== FUNNEL & PATIENTS ================== */
+function renderFunnel(){
+ const i=cur,d=D(DATA.weeks[i]);
+ const steps=[["Leads received",d.leads],["Contacted",d.contacted],["Booked",d.booked],["Attended",d.attended],["Purchased",d.purchased]];
+ const base=Math.max(d.leads||0,1);
+ let worst=-1,worstPct=0;
+ for(let x=1;x<5;x++){const p=steps[x-1][1],c=steps[x][1];if(p&&c!=null){const dr=(p-c)/p*100;if(dr>worstPct){worstPct=dr;worst=x}}}
+ const fun=steps.map(([l,v],x)=>{
+  const p=x?steps[x-1][1]:null,rate=(p&&v!=null)?v/p*100:null,lost=(p&&v!=null)?p-v:null;
+  return `<div class="fstep"><div class="lb">${l}</div>
+   <div class="bar"><div class="fill${x===worst?" warn":""}" style="width:${v!=null?Math.min(100,v/base*100):0}%"></div><span>${v!=null?int(v):""}</span></div>
+   <div class="rt">${rate!=null?`${rate.toFixed(0)}% through · <b>${lost} lost</b>`:""}</div></div>`}).join("");
+ const seg=[["New",d.newPatients],["Returning",d.returningPatients],["Reactivated",d.reactivatedPatients]];
+ $("#p-funnel").innerHTML=`<div class="sect"><h2 style="font-size:26px">Funnel and patients</h2><span class="ln"></span><span class="eyebrow">${wLabel(DATA.weeks[i])}</span></div>
+ <div class="grid2">
+  <div class="card"><div class="eyebrow" style="margin-bottom:14px">Where the opportunities went</div>
+   <div class="funnel">${fun}</div>
+   <div class="mini">${worst>0?`Biggest leak: <b>${steps[worst-1][0]} to ${steps[worst][0]}</b>, losing ${worstPct.toFixed(0)}% of that stage. End to end, ${int(d.leads)} leads became ${int(d.purchased)} purchases at <b>${pctf(d.leadToPurchase)}</b>.`:"Enter the week's funnel to find the biggest leak."}
+   ${d.cpl!=null?` Each lead cost <b>${money(d.cpl)}</b>, and each new patient cost <b>${money(d.cac)}</b>.`:""}</div></div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:14px">Where the patients came from</div>
+   <table><thead><tr><th>Source of patient</th><th class="n">Patients</th><th class="n">Share</th></tr></thead><tbody>
+   ${seg.map(([l,v])=>`<tr><td>${l}</td><td class="n">${int(v)}</td><td class="n mu">${d.patients?pctf(div(v,d.patients)*100):"—"}</td></tr>`).join("")}
+   <tr><td><b>Total treated</b></td><td class="n"><b>${int(d.patients)}</b></td><td class="n mu">100%</td></tr></tbody></table>
+   <div class="hstat" style="margin-top:16px">
+    <div><i>Average spend per patient</i><b>${money(d.atv)}</b></div>
+    <div><i>Gross profit per patient</i><b>${money(d.gpPerPatient)}</b></div>
+    <div><i>Rebooked at the chair</i><b class="${d.rebookRate!=null&&d.rebookRate<n(DATA.targets.rebookRate)?"a":""}">${pctf(d.rebookRate)}</b></div>
+    <div><i>Capacity used</i><b>${pctf(d.util)}</b></div>
+   </div>
+   <div class="mini" style="margin-bottom:4px">Published opening hours give <b>48 clinic hours a week</b>: Mon 10 to 6, Tue 8 to 6, Wed and Thu 8 to 7, Fri 8 to 4, closed at weekends. Check the slots available figure against that before treating utilisation as reliable.</div>
+   <div class="mini">${d.reactivatedPatients?`Reactivation produced <b>${int(d.reactivatedPatients)} patients</b> this week. Compare that against the cost of acquiring ${int(d.newPatients)} new ones at ${money(d.cac)} each.`:"No patients were reactivated this week. The database is the cheapest place to find revenue and it is currently producing nothing."}</div>
+  </div></div>`;
+}
+
+/* ================== FINANCIAL ================== */
+function renderMoney(){
+ const i=cur,w=DATA.weeks[i],d=D(w),mc=monthCtx(i);
+ const contrib=(d.gm!=null&&d.provPct!=null)?(d.gm-d.provPct)/100:null;
+ const be=(contrib&&contrib>0)?((d.marketingSpend||0)+(d.opex||0))/contrib:null;
+ const cats=[["Medical weight loss, GLP-1","revWeight"],["Hormone optimisation, HRT","revHRT"],["Aesthetics and skin","revAes"],["Wellness, IV and labs","revWellness"]];
+ $("#p-money").innerHTML=`<div class="sect"><h2 style="font-size:26px">Financial performance</h2><span class="ln"></span><span class="eyebrow">${wLabel(w)} · Aman</span></div>
+ <div class="bridge">
+  <div><i>Revenue</i><b>${money(d.rev)}</b><small>${int(d.patients)} patients</small></div>
+  <div><i>less COGS</i><b>${money(d.cogs!=null?-d.cogs:null)}</b><small>${d.gm!=null?pctf(100-d.gm)+" of revenue":"&nbsp;"}</small></div>
+  <div class="out"><i>Gross profit</i><b>${money(d.gp)}</b><small>${pctf(d.gm)} margin</small></div>
+  <div><i>less provider cost</i><b>${money(d.providerCost!=null?-d.providerCost:null)}</b><small>${pctf(d.provPct)} of revenue</small></div>
+  <div><i>less marketing</i><b>${money(d.marketingSpend!=null?-d.marketingSpend:null)}</b><small>${pctf(d.mktPct)} of revenue</small></div>
+  <div><i>less operating costs</i><b>${money(d.opex!=null?-d.opex:null)}</b><small>Fixed</small></div>
+  <div class="out"><i>Normalised EBITDA</i><b class="${d.ebitda!=null?(d.ebitda>=0?"g":"r"):""}">${money(d.ebitda)}</b><small>${pctf(d.ebitdaPct)} margin</small></div>
+ </div>
+ <div class="grid2" style="margin-top:14px">
+  <div class="card"><div class="eyebrow" style="margin-bottom:14px">Revenue by category</div>
+   <table><thead><tr><th>Category</th><th class="n">Revenue</th><th class="n">Share</th><th class="n">Prior week</th></tr></thead><tbody>
+   ${cats.map(([l,k])=>{const v=n(w[k]),pv=i>0?n(DATA.weeks[i-1][k]):null;
+     return `<tr><td>${l}</td><td class="n">${money(v)}</td><td class="n mu">${d.rev?pctf(div(v,d.rev)*100):"—"}</td>
+      <td class="n ${(v!=null&&pv!=null)?(v>=pv?"g":"r"):"mu"}">${money(pv)}</td></tr>`}).join("")}
+   </tbody></table>
+   <div class="mini">Mix decides the profit. The same revenue in different categories does not produce the same gross profit, which is why the campaign choice is a financial decision.</div></div>
+  <div class="card"><div class="eyebrow" style="margin-bottom:14px">Break even and the month</div>
+   <div class="hstat">
+    <div><i>Contribution rate</i><b>${contrib!=null?pctf(contrib*100):"—"}</b></div>
+    <div><i>Weekly break even</i><b>${money(be)}</b></div>
+    <div><i>Monthly break even</i><b>${money(be!=null?be*4.33:null)}</b></div>
+    <div><i>${mc.label} EBITDA to date</i><b class="${mc.eb>=0?"g":"r"}">${money(mc.eb)}</b></div>
+    <div><i>Month forecast revenue</i><b>${money(mc.forecast)}</b></div>
+    <div><i>Forecast against $167k</i><b class="${mc.forecast!=null&&mc.forecast>=n(DATA.destination)?"g":"a"}">${mc.forecast!=null?pctf(mc.forecast/n(DATA.destination)*100):"—"}</b></div>
+   </div>
+   <div class="mini">${be!=null?`Premier needs <b>${money(be)}</b> a week to cover its costs at this mix. Revenue above that contributes <b>${pctf(contrib*100)}</b> to EBITDA, so ${money(10000)} of extra revenue is worth about <b>${money(10000*contrib)}</b>.`:"Enter costs and revenue to calculate break even."}</div>
+  </div></div>
+ <div class="card" style="margin-top:14px">
+  <div class="sect"><div class="eyebrow">Draft revenue</div><span class="ln"></span>
+   <span class="num" style="font-size:11px;color:var(--mute)">Already inside revenue above, not additional to it</span></div>
+  <div class="hstat" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:0">
+   <div><i>Scheduled</i><b>${money(d.draftScheduled)}</b><small>Due this week</small></div>
+   <div><i>Collected</i><b class="${d.draftCollected!=null?"g":""}">${money(d.draftCollected)}</b><small>${d.draftRate!=null?pctf(d.draftRate)+" of scheduled":"&nbsp;"}</small></div>
+   <div><i>Failed or declined</i><b class="${d.draftFailed?"r":""}">${money(d.draftFailed)}</b><small>${(d.draftFailed&&d.draftScheduled)?pctf(d.draftFailed/d.draftScheduled*100)+" of scheduled":"&nbsp;"}</small></div>
+   <div><i>Share of revenue</i><b>${pctf(d.recurringPct)}</b><small>Recurring</small></div>
+   <div><i>Average draft</i><b>${money(d.avgDraft)}</b><small>Per programme patient</small></div>
+   <div><i>Monthly run rate</i><b>${money(d.draftCollected!=null?d.draftCollected*4.33:null)}</b><small>${(d.draftCollected!=null&&n(DATA.destination))?pctf(d.draftCollected*4.33/n(DATA.destination)*100)+" of "+money(n(DATA.destination)):"&nbsp;"}</small></div>
+  </div>
+  <div class="mini">${d.draftScheduled?`${d.draftFailed?`<b>${money(d.draftFailed)}</b> of scheduled draft revenue did not collect this week. A failed draft is usually a patient lost rather than a payment delayed, so it belongs in Brittany's follow-up queue the same day.`:"Every scheduled draft collected."} Draft revenue is the part of the month that arrives without anyone selling anything, so it is the number that decides how much of $167,000 has to be won again from scratch each month.`:"Enter what was scheduled, collected and failed to see how much of Premier's revenue recurs. This is the part of the month that does not have to be re-sold."}</div>
+ </div>
+ <div class="card" style="margin-top:14px">
+  <div class="sect"><div class="eyebrow">Published prices · premiersolutionsweightloss.com, August 2026</div><span class="ln"></span></div>
+  <div class="grid2">
+   <table><thead><tr><th>Monthly programme</th><th class="n">Price</th><th class="n">Annual if retained</th></tr></thead><tbody>
+    ${[["GLP-1 2.5 mg",375],["GLP-1 5 mg",475],["GLP-1 7.5 mg",600],["GLP-1 10 mg",699]].map(([l,v])=>
+      `<tr><td>${l}</td><td class="n">${money(v)}</td><td class="n mu">${money(v*12)}</td></tr>`).join("")}
+    <tr><td class="mu">New patient GLP-1 2.5 mg, first month</td><td class="n a">${money(249)}</td><td class="n mu">excludes consultation and labs</td></tr>
+    <tr><td class="mu">New patient male HRT, first month</td><td class="n a">${money(169)}</td><td class="n mu">excludes consultation and labs</td></tr>
+   </tbody></table>
+   <table><thead><tr><th>Single treatment</th><th class="n">Price</th><th class="n">Visits to match a GLP-1 month</th></tr></thead><tbody>
+    ${[["IV infusion boost",119],["Mini lip plump",375],["Microneedling and skin booster",425],["Xtra juicy lip plump",550]].map(([l,v])=>
+      `<tr><td>${l}</td><td class="n">${money(v)}</td><td class="n mu">${(375/v).toFixed(1)}</td></tr>`).join("")}
+   </tbody></table>
+  </div>
+  <div class="mini">The intro offer gives away <b>${money(375-249)}</b> against the standing GLP-1 price.${d.cac!=null?` At a cost per new patient of <b>${money(d.cac)}</b>, Premier is roughly <b>${money(d.cac+126-249)}</b> ${d.cac+126-249>=0?"down":"up"} on a new GLP-1 patient in month one before any COGS.`:""} Everything therefore rests on how many of them are still paying in month two, which is why programme churn is on the scorecard and needs to be measured properly.</div>
+ </div>`;
+}
+
+/* ================== TREND ================== */
+function renderTrend(){
+ const wt=wTarget()||0, ws=DATA.weeks;
+ const vals=ws.map(w=>D(w).rev||0), maxv=Math.max(wt,...vals,1);
+ const W=Math.max(560,ws.length*96), H=230, PB=28, PL=54;
+ const bw=(W-PL-16)/Math.max(ws.length,1);
+ const y=v=>H-PB-(v/maxv)*(H-PB-18);
+ const bars=ws.map((w,i)=>{const v=D(w).rev||0,h=Math.max(0,H-PB-y(v));
+   const col=wt&&v>=wt?"var(--green)":wt&&v>=wt*.8?"var(--amber)":"var(--red)";
+   return `<g><rect x="${PL+i*bw+bw*.16}" y="${y(v)}" width="${bw*.68}" height="${h}" fill="${col}" opacity="${i===cur?1:.62}"></rect>
+    <text x="${PL+i*bw+bw*.5}" y="${y(v)-6}" text-anchor="middle" fill="var(--bone)">${v?"$"+Math.round(v/1000)+"k":""}</text>
+    <text x="${PL+i*bw+bw*.5}" y="${H-10}" text-anchor="middle">${(w.date||"").slice(8,10)+"/"+(w.date||"").slice(5,7)}</text></g>`}).join("");
+ const gl=[0,.5,1].map(f=>`<line class="axis" x1="${PL}" y1="${y(maxv*f)}" x2="${W-8}" y2="${y(maxv*f)}"></line>
+   <text x="${PL-8}" y="${y(maxv*f)+3}" text-anchor="end">$${Math.round(maxv*f/1000)}k</text>`).join("");
+ const tgt=wt?`<line class="tgt" x1="${PL}" y1="${y(wt)}" x2="${W-8}" y2="${y(wt)}"></line><text x="${W-10}" y="${y(wt)-6}" text-anchor="end" fill="var(--bone)">Target ${money(wt)}</text>`:"";
+ const core=M.filter(m=>m.core);
+ $("#p-trend").innerHTML=`<div class="sect"><h2 style="font-size:26px">Trend</h2><span class="ln"></span><span class="eyebrow">${ws.length} weeks recorded</span></div>
+ <div class="card"><div class="eyebrow" style="margin-bottom:10px">Weekly revenue against target</div>
+  <div class="chartwrap"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Weekly revenue against target">${gl}${bars}${tgt}</svg></div></div>
+ <div class="card" style="margin-top:14px;overflow-x:auto"><div class="eyebrow" style="margin-bottom:12px">The core twelve, week by week</div>
+  <table class="spark"><thead><tr><th style="min-width:200px">Measure</th><th class="n">Target</th>${ws.map(w=>`<th class="n">${(w.date||"").slice(8,10)}/${(w.date||"").slice(5,7)}</th>`).join("")}</tr></thead>
+  <tbody>${core.map(m=>`<tr><td>${m.l}</td><td class="n mu">${fmtv(m,n(DATA.targets[m.k]))}</td>
+   ${ws.map((w,i)=>{const v=mval(m.k,i),a=attain(m,v);
+     return `<td class="n ${a==null?"mu":(a>=.95?"g":a>=.8?"a":"r")}">${fmtv(m,v)}</td>`}).join("")}</tr>`).join("")}
+  </tbody></table>
+  <div class="mini">Colour is attainment against target, not direction. A green column that never improves is still a target set too low.</div></div>`;
+}
+
+/* ================== ENTRY ================== */
+function renderEntry(){
+ const w=DATA.weeks[cur];
+ const isNow=w.date===todayMonday();
+ $("#p-entry").innerHTML=`<div class="sect"><h2 style="font-size:26px">Enter the week</h2><span class="ln"></span>
+   ${isNow?"":`<button class="btn" id="toCurrent">Back to this week</button>`}
+   <button class="btn ghost" id="delWeek">Delete this week</button></div>
+  <div class="weeknote ${isNow?"":"past"}">
+   <b>${wLabel(w)}</b>
+   <span>${isNow?"This week. Everything typed below is shared with the team within about half a minute."
+      :"You are looking at a past week. Anything you change here edits the record for that week."}</span></div>
+  <p class="mu" style="max-width:82ch;font-size:14px;margin-top:12px">Hover any field name to see exactly what belongs in it. Capture at source wherever a system already holds the number. Anything typed in by hand on a Friday afternoon is a candidate for automation, and should be logged as such on the data confidence tab.</p>
+  <div class="card" style="margin-top:14px">
+   ${FIELDS.map(gr=>`<div class="entrygroup"><h4>${gr.g}</h4><div class="fldgrid">
+     ${gr.f.map(([k,l])=>`<label class="fld"><i${DEFS[k]?` class="hasdef" title="${tip(k)}"`:""}>${l}</i><input type="number" data-w="${k}" value="${w[k]??""}"></label>`).join("")}
+   </div></div>`).join("")}
+   <div class="entrygroup"><h4>Notes for the week</h4>
+     <textarea id="wnote" rows="3" placeholder="What happened, what was agreed, anything the numbers do not explain.">${(w.note||"").replace(/</g,"&lt;")}</textarea></div>
+   <div class="entrygroup"><h4>Derived from what you entered</h4><div id="derived"></div></div>
+  </div>`;
+ derived();
+}
+function derived(){
+ const d=D(DATA.weeks[cur]);
+ const items=[["Revenue",money(d.rev)],["Gross profit",money(d.gp)],["Gross margin",pctf(d.gm)],["EBITDA",money(d.ebitda)],
+  ["Cost per lead",money(d.cpl)],["Booking conversion",pctf(d.bookingRate)],["Lead to purchase",pctf(d.leadToPurchase)],
+  ["Average spend",money(d.atv)],["Utilisation",pctf(d.util)],["Rebooking",pctf(d.rebookRate)]];
+ const el=$("#derived"); if(el)el.innerHTML=`<div class="hstat" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+  ${items.map(([l,v])=>`<div><i>${l}</i><b>${v}</b></div>`).join("")}</div>`;
+}
+
+/* ================== AUDIT ================== */
+function renderAudit(){
+ let g=0,a=0,r=0; M.forEach(m=>{const v=DATA.rag[m.k];if(v==="G")g++;if(v==="A")a++;if(v==="R")r++});
+ $("#p-audit").innerHTML=`<div class="sect"><h2 style="font-size:26px">Data confidence</h2><span class="ln"></span>
+   <span class="num" style="font-size:11px;color:var(--mute)">${g+a+r} of ${M.length} classified · <span class="dot G"></span> ${g} · <span class="dot A"></span> ${a} · <span class="dot R"></span> ${r}</span></div>
+  <p class="mu" style="max-width:82ch;font-size:14px">Classify every measure before anyone acts on it. This is about whether we can trust the number, not whether the number is good.</p>
+  <div class="ragkey">
+   <div><span class="dot G"></span><b>Green</b><span>A system produces this number reliably every week. Nobody reconstructs it, nobody estimates it, and two people asked on separate days would give the same answer.</span></div>
+   <div><span class="dot A"></span><b>Amber</b><span>We can get it, but it takes manual work or a judgement call, so it moves depending on who produced it. Usable with care, and a candidate for automation.</span></div>
+   <div><span class="dot R"></span><b>Red</b><span>We cannot measure it today. Leave the field empty rather than guessing. An empty field is honest, an invented one is not.</span></div>
+  </div>
+  <p class="mu" style="max-width:82ch;font-size:14px;margin-top:12px">Every amber and red opens five fields. <b>What is missing</b> is the gap itself. <b>Current source</b> is wherever the number lives today, even if that is somebody's head. <b>Proposed solution</b> is what would make it green. <b>Owner</b> is one named person, not a team. <b>Deadline</b> is when it becomes green.</p>
+  ${SYS.map(s=>{const ms=M.filter(m=>m.s===s.id);if(!ms.length)return"";
+   return `<div class="card" style="margin-top:14px"><div class="eyebrow" style="margin-bottom:12px">${s.t} &nbsp;·&nbsp; ${s.o}</div>
+   ${ms.map(m=>{const v=DATA.rag[m.k];
+    return `<div style="border-bottom:1px solid var(--line);padding:8px 0">
+     <div style="display:flex;gap:12px;align-items:center"><div style="flex:1;font-size:14px"><span${DEFS[m.k]?` class="hasdef" title="${tip(m.k)}"`:""}>${m.l}</span></div>
+      <div class="ragsel" data-k="${m.k}">${["G","A","R"].map(x=>`<button data-v="${x}" aria-pressed="${v===x}" title="${x==="G"?"Green: a system produces this reliably every week":x==="A"?"Amber: available, but it takes manual work or judgement":"Red: we cannot measure this today"}">${x}</button>`).join("")}</div></div>
+     ${(v==="A"||v==="R")?`<div class="ragfix">
+       <label class="fld"><i>What is missing</i><input type="text" data-f2="${m.k}|miss" value="${(DATA.rag[m.k+"|miss"]||"").replace(/"/g,"&quot;")}"></label>
+       <label class="fld"><i>Current source</i><input type="text" data-f2="${m.k}|src" value="${(DATA.rag[m.k+"|src"]||"").replace(/"/g,"&quot;")}"></label>
+       <label class="fld"><i>Proposed solution</i><input type="text" data-f2="${m.k}|fix" value="${(DATA.rag[m.k+"|fix"]||"").replace(/"/g,"&quot;")}"></label>
+       <label class="fld"><i>Owner</i><input type="text" data-f2="${m.k}|own" value="${(DATA.rag[m.k+"|own"]||"").replace(/"/g,"&quot;")}"></label>
+       <label class="fld"><i>Deadline</i><input type="date" data-f2="${m.k}|due" value="${DATA.rag[m.k+"|due"]||""}"></label></div>`:""}
+    </div>`}).join("")}</div>`}).join("")}`;
+}
+
+/* ================== WIRING ================== */
+const R={status:renderStatus,scorecard:renderScorecard,funnel:renderFunnel,money:renderMoney,trend:renderTrend,entry:renderEntry,audit:renderAudit};
+let active="status";
+function renderActive(){R[active]()}
+/* re-render without stealing the cursor: remember what was focused, put it back */
+function keepFocus(fn){
+ const a=document.activeElement; let sel=null,st=null;
+ if(a&&a.tagName&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){
+  if(a.id)sel="#"+a.id;
+  else{const k=["plan","lo","o","t","a","w","f2","brand","brandhex"].find(x=>a.dataset[x]!==undefined);
+       if(k)sel="[data-"+k+'="'+a.dataset[k]+'"]';}
+  try{st=a.selectionStart}catch(_){}
+ }
+ fn();
+ if(sel){const e=$(sel); if(e){e.focus(); if(st!=null&&e.setSelectionRange){try{e.setSelectionRange(st,st)}catch(_){}}}}
+}
+function goto(p){active=p;
+ $$("#tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.p===p)));
+ $$(".panel").forEach(s=>s.classList.toggle("on",s.id==="p-"+p));
+ R[p](); window.scrollTo({top:0,behavior:"smooth"});
+}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)goto(b.dataset.p)});
+
+function buildWeekSel(){
+ const s=$("#weekSel");
+ const now=todayMonday();
+ s.innerHTML=DATA.weeks.map((w,i)=>`<option value="${i}" ${i===cur?"selected":""}>${wLabel(w)}${w.date===now?" · this week":""}</option>`).join("");
+ const t=$("#thisW"); if(t)t.style.display=(DATA.weeks[cur]&&DATA.weeks[cur].date===now)?"none":"";
+ const sc=$("#scWeek"); if(sc){sc.innerHTML=s.innerHTML}
+ const wk=DATA.weeks.length;
+ $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
+  <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.7 · 2 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+ saveState();
+}
+$("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
+document.addEventListener("change",e=>{if(e.target.id==="scWeek"){cur=+e.target.value;buildWeekSel();renderActive()}});
+$("#prevW").onclick=()=>{if(cur>0){cur--;buildWeekSel();renderActive()}};
+$("#thisW").onclick=()=>{ensureCurrentWeek(true);buildWeekSel();renderActive()};
+$("#nextW").onclick=()=>{if(cur<DATA.weeks.length-1){cur++;buildWeekSel();renderActive()}};
+
+document.addEventListener("input",e=>{
+ const t=e.target;
+ if(t.dataset.w!==undefined&&t.dataset.w!==""){DATA.weeks[cur][t.dataset.w]=t.value;derived();}
+ if(t.dataset.t)DATA.targets[t.dataset.t]=t.value;
+ if(t.dataset.a!==undefined&&t.dataset.a!=="")DATA.actions[t.dataset.a]=t.value;
+ if(t.dataset.f2)DATA.rag[t.dataset.f2]=t.value;
+ if(t.id==="interimLabel")DATA.interimLabel=t.value;
+ if(t.dataset.plan)DATA.plan[t.dataset.plan]=t.value;
+ if(t.dataset.o!==undefined&&t.dataset.o!==""){DATA.owners=DATA.owners||{};DATA.owners[t.dataset.o]=t.value}
+ if(t.dataset.lo!==undefined&&t.dataset.lo!==""){DATA.planOwners=DATA.planOwners||{};DATA.planOwners[t.dataset.lo]=t.value}
+ if(t.id==="wnote")DATA.weeks[cur].note=t.value;
+ queueSave();
+});
+document.addEventListener("change",e=>{
+ const t=e.target; queueSave();
+ if(t.id==="monthlyTarget"){DATA.monthlyTarget=t.value===""?"":(+t.value||0);keepFocus(renderStatus)}
+ if(t.id==="destTarget"){DATA.destination=t.value===""?"":(+t.value||0);keepFocus(renderStatus)}
+ if(t.dataset.plan)keepFocus(renderStatus);
+ if(t.dataset.t&&active==="scorecard")keepFocus(renderScorecard);
+});
+document.addEventListener("click",e=>{
+ queueSave();
+ const tile=e.target.closest(".tile"); if(tile){drill(tile.dataset.sys);return}
+ if(e.target.closest("[data-close]")){openSys=null;renderStatus();return}
+ const rb=e.target.closest(".ragsel button");
+ if(rb){const k=rb.parentElement.dataset.k,v=rb.dataset.v;DATA.rag[k]=DATA.rag[k]===v?null:v;renderAudit();return}
+ if(e.target.id==="coreTog"){coreOnly=!coreOnly;renderScorecard();return}
+ if(e.target.id==="toCurrent"){ensureCurrentWeek(true);buildWeekSel();renderEntry();return}
+ if(e.target.id==="delWeek"){
+  if(DATA.weeks.length<2){alert("Keep at least one week.");return}
+  if(!confirm("Delete "+wLabel(DATA.weeks[cur])+"?"))return;
+  DATA.weeks.splice(cur,1);cur=Math.max(0,cur-1);buildWeekSel();renderEntry();return}
+});
+
+$("#clearAll").onclick=()=>{
+ if(!confirm("Clear every week, target and note in this file? Save to file first if you need it."))return;
+ const keepBrand=DATA.brand; DATA=freshData(); DATA.brand=keepBrand||DATA.brand;
+ cur=0; openSys=null; try{localStorage.removeItem(LSKEY)}catch(e){} lastJSON=""; lastSaved=null;
+ applyBrand(); buildWeekSel(); renderActive(); saveState();
+};
+
+/* ---- brand colours ---- */
+const DEF_BRAND={navy:"#101B31",gold:"#7EA46B",linen:"#F6F8FA"};
+function shade(hex,amt){
+ const m=/^#?([0-9a-f]{6})$/i.exec(hex||""); if(!m)return hex;
+ const v=parseInt(m[1],16); const c=[v>>16&255,v>>8&255,v&255].map(x=>Math.max(0,Math.min(255,Math.round(x+(amt>0?(255-x)*amt:x*amt)))));
+ return"#"+c.map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+function applyBrand(){
+ const b=DATA.brand||DEF_BRAND, r=document.documentElement.style;
+ r.setProperty("--navy",b.navy); r.setProperty("--navy2",shade(b.navy,.22));
+ r.setProperty("--gold",b.gold); r.setProperty("--gold2",shade(b.gold,-.28));
+ r.setProperty("--linen",b.linen); r.setProperty("--tint",shade(b.linen,.45)); r.setProperty("--tint2",shade(b.linen,-.05));
+ r.setProperty("--line",shade(b.linen,-.10)); r.setProperty("--line2",shade(b.linen,-.22));
+ ["navy","gold","linen"].forEach(k=>{
+  const c=$('[data-brand="'+k+'"]'),t=$('[data-brandhex="'+k+'"]');
+  if(c)c.value=b[k]; if(t)t.value=b[k].toUpperCase();
+ });
+}
+$("#brandBtn").onclick=()=>$("#brandBar").classList.toggle("on");
+$("#brandReset").onclick=()=>{DATA.brand=Object.assign({},DEF_BRAND);applyBrand();renderActive()};
+$("#brandBar").addEventListener("input",e=>{
+ const t=e.target, k=t.dataset.brand||t.dataset.brandhex; if(!k)return;
+ const v=t.value.trim(); if(!/^#?[0-9a-fA-F]{6}$/.test(v))return;
+ DATA.brand=DATA.brand||Object.assign({},DEF_BRAND);
+ DATA.brand[k]=v[0]==="#"?v:"#"+v; applyBrand();
+});
+$("#exportBtn").onclick=()=>{
+ const blob=new Blob([JSON.stringify(DATA,null,1)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download="premier-dashboard-"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+$("#importBtn").onclick=()=>$("#importFile").click();
+const isEmpty=v=>v===undefined||v===null||v==="";
+function mergeMap(dst,src,st){
+ if(!src)return; Object.keys(src).forEach(k=>{
+  if(isEmpty(src[k]))return;
+  if(isEmpty(dst[k])){dst[k]=src[k];st.vals++}
+  else if(String(dst[k])!==String(src[k]))st.clash++;
+ });
+}
+function weekHasAnything(w){return SKEYS.some(k=>!isEmpty(w[k]))||!!(w.note&&String(w.note).trim())}
+function mergeIn(j,st){
+ // a file that has only its opening blank week should adopt the shared weeks
+ // rather than sit an empty week alongside them
+ const fresh=DATA.weeks.length===1&&!weekHasAnything(DATA.weeks[0]);
+ const blank=fresh?DATA.weeks[0]:null;
+ (j.weeks||[]).forEach(iw=>{
+  let ew=DATA.weeks.find(x=>x.date===iw.date);
+  if(!ew){ew=blankWeek(iw.date);DATA.weeks.push(ew);st.weeks++}
+  SKEYS.forEach(k=>{
+   if(isEmpty(iw[k]))return;
+   if(isEmpty(ew[k])){ew[k]=iw[k];st.vals++}
+   else if(String(ew[k])!==String(iw[k]))st.clash++;
+  });
+  const nt=(iw.note||"").trim();
+  if(nt){ if(!ew.note){ew.note=nt;st.vals++} else if(!ew.note.includes(nt)){ew.note=ew.note+"\n"+nt;st.vals++} }
+ });
+ if(blank&&DATA.weeks.length>1&&!weekHasAnything(blank))DATA.weeks=DATA.weeks.filter(x=>x!==blank);
+ DATA.weeks.sort((x,y)=>String(x.date).localeCompare(String(y.date)));
+ mergeMap(DATA.targets,j.targets,st); mergeMap(DATA.owners,j.owners,st);
+ mergeMap(DATA.planOwners,j.planOwners,st); mergeMap(DATA.actions,j.actions,st);
+ mergeMap(DATA.plan,j.plan,st); mergeMap(DATA.rag,j.rag,st);
+ ["destination","monthlyTarget","interimLabel"].forEach(k=>{if(isEmpty(DATA[k])&&!isEmpty(j[k])){DATA[k]=j[k];st.vals++}});
+ if(j.brand&&(!DATA.brand||JSON.stringify(DATA.brand)===JSON.stringify(DEF_BRAND)))DATA.brand=Object.assign({},DEF_BRAND,j.brand);
+}
+$("#importFile").addEventListener("change",e=>{
+ const files=[...e.target.files]; if(!files.length)return;
+ const st={vals:0,weeks:0,clash:0,files:0,bad:0};
+ Promise.all(files.map(f=>new Promise(res=>{
+  const rd=new FileReader();
+  rd.onload=()=>{try{
+    const j=JSON.parse(rd.result);
+    if(!j||!Array.isArray(j.weeks))throw new Error("shape");
+    mergeIn(j,st); st.files++;
+  }catch(err){st.bad++} res()};
+  rd.onerror=()=>{st.bad++;res()};
+  rd.readAsText(f);
+ }))).then(()=>{
+  cur=DATA.weeks.length-1; applyBrand(); buildWeekSel(); renderActive(); lastJSON=""; persist();
+  saveState(`Merged <b>${st.files} file${st.files===1?"":"s"}</b>: ${st.vals} value${st.vals===1?"":"s"} added, ${st.weeks} new week${st.weeks===1?"":"s"}.`
+   +(st.clash?` <b style="color:var(--amber)">${st.clash} entr${st.clash===1?"y":"ies"} already had a different number and were left as they were.</b>`:"")
+   +(st.bad?` <b style="color:var(--red)">${st.bad} file could not be read.</b>`:""));
+  e.target.value="";
+ });
+});
+
+/* ---- autosave --------------------------------------------------------
+   Everything entered is kept in this browser automatically, so closing
+   the tab loses nothing. It is per browser and per device, so Save to
+   file is still how a week travels between people.                    */
+const LSKEY="premier-growth-dashboard-v1";
+let lastSaved=null,lastJSON="",storageOK=true,saveT=null;
+function queueSave(){clearTimeout(saveT);saveT=setTimeout(persist,500);if(typeof queueCloud==="function")queueCloud()}
+try{localStorage.setItem(LSKEY+"-t","1");localStorage.removeItem(LSKEY+"-t")}catch(e){storageOK=false}
+function persist(){
+ if(!storageOK)return;
+ try{const j=JSON.stringify(DATA); if(j===lastJSON)return;
+  localStorage.setItem(LSKEY,JSON.stringify({saved:new Date().toISOString(),data:DATA}));
+  lastJSON=j; lastSaved=new Date(); saveState();
+ }catch(e){storageOK=false;saveState()}
+}
+function restore(){
+ if(!storageOK)return false;
+ try{const raw=localStorage.getItem(LSKEY); if(!raw)return false;
+  const j=JSON.parse(raw); if(!j||!j.data||!Array.isArray(j.data.weeks))return false;
+  DATA=Object.assign(freshData(),j.data);
+  DATA.brand=Object.assign({},DEF_BRAND,j.data.brand||{});
+  DATA.targets=Object.assign({},DEF_TARGETS,j.data.targets||{});
+  DATA.plan=Object.assign({},ZERO_PLAN,j.data.plan||{});
+  cur=DATA.weeks.length-1; lastSaved=new Date(j.saved); lastJSON=JSON.stringify(DATA); return true;
+ }catch(e){return false}
+}
+function saveState(msg){
+ const el=$("#saveState"); if(!el)return;
+ if(msg){el.innerHTML=msg;return}
+ const local=!storageOK
+  ? `<b style="color:var(--amber)">This browser is not storing anything.</b> Use Save to file before you close the tab.`
+  : (lastSaved?`Saved in this browser at ${lastSaved.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}`:"Nothing entered yet");
+ el.innerHTML=local+(cloudState?" &nbsp;·&nbsp; "+cloudState:(cloudOn()?"":" &nbsp;·&nbsp; Not connected to the shared sheet"));
+}
+restore();
+setInterval(persist,1500);
+window.addEventListener("beforeunload",persist);
+
+/* ---- shared storage --------------------------------------------------
+   Velle: put the deployed Apps Script URL and the passcode here before
+   uploading, and nobody else has to configure anything.               */
+const CLOUD_URL_DEFAULT="https://script.google.com/macros/s/AKfycbz8mrLvqSs-nCYxf1l3b7PUo1poZaiTxxFzULOcyAJr_1mFkIKU3MhCka9A0_SuqOWe_Q/exec";
+const CLOUD_PASS_DEFAULT="REDACTED";
+const CFGKEY="premier-growth-dashboard-cloud";
+let CFG={url:CLOUD_URL_DEFAULT,pass:CLOUD_PASS_DEFAULT,who:""},cloudRev=null,cloudState="",syncT=null,syncing=false;
+try{const c=JSON.parse(localStorage.getItem(CFGKEY)||"null"); if(c)CFG=Object.assign(CFG,c);}catch(e){}
+function cfgSave(){try{localStorage.setItem(CFGKEY,JSON.stringify(CFG))}catch(e){}}
+function cloudOn(){return !!(CFG.url&&CFG.pass)}
+function cloudSay(msg,cls){cloudState=msg?`<span class="${cls||""}">${msg}</span>`:"";saveState()}
+function post(body){
+ return fetch(CFG.url,{method:"POST",body:JSON.stringify(Object.assign({pass:CFG.pass},body))})
+  .then(r=>r.json());
+}
+function cloudPull(quiet){
+ if(!cloudOn())return Promise.resolve();
+ return post({action:"load"}).then(j=>{
+  if(!j||!j.ok){cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not reach the shared copy","a");return}
+  cloudRev=j.rev;
+  if(j.data){const st={vals:0,weeks:0,clash:0}; mergeIn(j.data,st);
+   if(st.vals||st.weeks){cur=Math.min(cur,DATA.weeks.length-1);buildWeekSel();renderActive();lastJSON="";persist()}}
+  if(!quiet)cloudSay("Up to date with the team");
+ }).catch(()=>cloudSay("Could not reach the shared copy","a"));
+}
+function cloudPush(){
+ if(!cloudOn()||syncing)return Promise.resolve();
+ syncing=true; cloudSay("Saving for the team…");
+ return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(j=>{
+  if(j&&j.conflict){ // somebody saved first: take theirs, merge, send once more
+   const st={vals:0,weeks:0,clash:0}; if(j.data)mergeIn(j.data,st);
+   cloudRev=j.rev; buildWeekSel(); renderActive(); lastJSON=""; persist(); syncing=false;
+   return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(k=>{
+    if(k&&k.ok){cloudRev=k.rev;cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
+   });
+  }
+  if(j&&j.ok){cloudRev=j.rev;cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
+  else cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not save to the shared copy","a");
+ }).catch(()=>cloudSay("Could not save to the shared copy","a")).then(()=>{syncing=false});
+}
+function queueCloud(){if(!cloudOn())return;clearTimeout(syncT);syncT=setTimeout(cloudPush,3000)}
+function cloudFields(){
+ const u=$("#cloudUrl"),p=$("#cloudPass"),w=$("#cloudWho");
+ if(u)u.value=CFG.url; if(p)p.value=CFG.pass; if(w)w.value=CFG.who;
+}
+$("#cloudBtn").onclick=()=>{$("#cloudBar").classList.toggle("on");cloudFields()};
+$("#cloudBar").addEventListener("input",e=>{
+ const t=e.target;
+ if(t.id==="cloudUrl")CFG.url=t.value.trim();
+ if(t.id==="cloudPass")CFG.pass=t.value.trim();
+ if(t.id==="cloudWho")CFG.who=t.value.trim();
+ cfgSave();
+});
+$("#cloudSync").onclick=()=>cloudPull().then(cloudPush);
+$("#cloudOff").onclick=()=>{CFG.url="";CFG.pass="";cfgSave();cloudFields();cloudRev=null;cloudSay("")};
+
+ensureCurrentWeek(true);
+applyBrand(); buildWeekSel(); goto("status"); saveState(); cloudFields();
+if(cloudOn()){cloudPull().then(()=>{ensureCurrentWeek(true);buildWeekSel();renderActive()});
+ setInterval(()=>{if(!syncing)cloudPull(true)},30000)}
+})();
+</script>
+</body>
+</html>
