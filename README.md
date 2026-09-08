@@ -5,11 +5,14 @@ no build step. Data lives in a Google Sheet behind an Apps Script web app;
 the page reads and writes it every few seconds.
 
 ```
-dashboard/premier-growth-dashboard.html   the dashboard  (this is the master copy)
-dashboard/apps-script.gs                  the Sheet-side storage script
-premier.py                                read/write the store from the terminal
-backups/                                  timestamped snapshots of the store
+index.html        the dashboard — this file IS the site, and is the master copy
+apps-script.gs    the Sheet-side storage script
+premier.py        read/write the store from the terminal
+backups/          timestamped snapshots of the store
 ```
+
+Pushing to `main` republishes the site. There is no build step and no upload:
+whatever `index.html` contains is what the team sees on their next refresh.
 
 ## How the pieces fit
 
@@ -57,5 +60,11 @@ Changes stage locally in `.staged.json` and reach the team's copy only on `push`
 
 ## Deploying
 
-The file is static — whatever is committed here is what should be served. The live
-copy currently runs at https://premier-dashboard.tiiny.site/ and is uploaded by hand.
+Served by GitHub Pages straight from `main`. Push and it is live.
+
+The passcode is **not** in this repo or in `index.html`. Each person enters it once
+on their own browser and it is remembered there. If it ever needs changing, edit
+`PASSCODE` in `apps-script.gs`, redeploy the Apps Script, and tell the team the new one.
+
+The old hand-uploaded copy at https://premier-dashboard.tiiny.site/ can be retired
+once the Pages URL is confirmed working.

@@ -25,6 +25,7 @@
   --pad:clamp(14px,3.5vw,44px);
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--linen);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.018em;color:var(--navy)}
 p{margin:0 0 .8em}
@@ -251,9 +252,17 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
       <button class="btn ghost" onclick="window.print()">Print</button>
     </div>
   </div>
+  <div class="banner" id="connectBar" hidden style="border-left-color:var(--navy)">
+    <p><b>Enter the team passcode to load the shared numbers.</b><br>
+       You will only be asked once on this browser. Ask Courtney if you do not have it.</p>
+    <div class="bnbtns">
+      <input type="password" id="connectPass" placeholder="Passcode" autocomplete="current-password" style="width:170px">
+      <button class="btn solid" id="connectGo">Connect</button>
+    </div>
+  </div>
   <div class="brandbar" id="cloudBar">
     <div style="flex:1 1 320px"><label>Web app URL</label><input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
-    <div><label>Passcode</label><input type="text" id="cloudPass" style="width:130px"></div>
+    <div><label>Passcode</label><input type="password" id="cloudPass" style="width:130px" autocomplete="current-password"></div>
     <div><label>Your name</label><input type="text" id="cloudWho" style="width:120px" placeholder="Courtney"></div>
     <button class="btn" id="cloudSync">Sync now</button>
     <button class="btn ghost" id="cloudOff">Disconnect</button>
@@ -281,7 +290,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v1.7 · 2 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v1.8 · 8 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -875,7 +884,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.7 · 2 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.8 · 8 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
@@ -1054,7 +1063,7 @@ window.addEventListener("beforeunload",persist);
    Velle: put the deployed Apps Script URL and the passcode here before
    uploading, and nobody else has to configure anything.               */
 const CLOUD_URL_DEFAULT="https://script.google.com/macros/s/AKfycbz8mrLvqSs-nCYxf1l3b7PUo1poZaiTxxFzULOcyAJr_1mFkIKU3MhCka9A0_SuqOWe_Q/exec";
-const CLOUD_PASS_DEFAULT="REDACTED";
+const CLOUD_PASS_DEFAULT="";   // never stored in this file — each person enters it once
 const CFGKEY="premier-growth-dashboard-cloud";
 let CFG={url:CLOUD_URL_DEFAULT,pass:CLOUD_PASS_DEFAULT,who:""},cloudRev=null,cloudState="",syncT=null,syncing=false;
 try{const c=JSON.parse(localStorage.getItem(CFGKEY)||"null"); if(c)CFG=Object.assign(CFG,c);}catch(e){}
@@ -1103,11 +1112,21 @@ $("#cloudBar").addEventListener("input",e=>{
  if(t.id==="cloudWho")CFG.who=t.value.trim();
  cfgSave();
 });
+function showConnect(){const b=$("#connectBar"); if(b)b.hidden=cloudOn()}
+function tryConnect(){
+ const v=($("#connectPass").value||"").trim(); if(!v)return;
+ CFG.pass=v; cfgSave(); cloudFields(); showConnect();
+ cloudSay("Connecting…");
+ cloudPull().then(()=>{ if(!cloudOn()||cloudRev==null){CFG.pass="";cfgSave();showConnect();cloudSay("Passcode not accepted","a")}
+  else {ensureCurrentWeek(true);buildWeekSel();renderActive()} });
+}
+$("#connectGo").onclick=tryConnect;
+$("#connectPass").addEventListener("keydown",e=>{if(e.key==="Enter")tryConnect()});
 $("#cloudSync").onclick=()=>cloudPull().then(cloudPush);
 $("#cloudOff").onclick=()=>{CFG.url="";CFG.pass="";cfgSave();cloudFields();cloudRev=null;cloudSay("")};
 
 ensureCurrentWeek(true);
-applyBrand(); buildWeekSel(); goto("status"); saveState(); cloudFields();
+applyBrand(); buildWeekSel(); goto("status"); saveState(); cloudFields(); showConnect();
 if(cloudOn()){cloudPull().then(()=>{ensureCurrentWeek(true);buildWeekSel();renderActive()});
  setInterval(()=>{if(!syncing)cloudPull(true)},30000)}
 })();
