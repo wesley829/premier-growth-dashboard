@@ -1,6 +1,6 @@
-# Setup — the two jobs that need a person
+# Setup
 
-Both are one-off. Neither takes long. Nothing else in this repo needs touching.
+One job still needs a person. Nothing else in this repo needs touching.
 
 ---
 
@@ -31,39 +31,23 @@ prompted for the new one. Nobody loses any data — it all lives in the Sheet.
 
 ---
 
-## 2. Put the site on Cloudflare Pages  (10 minutes, free, repo stays private)
+## 2. Hosting — done
 
-Once this is done, publishing is automatic: a push to `main` updates the live
-dashboard, with no upload step and no way for the live copy to drift out of date.
+The site is published by GitHub Pages straight from this repo:
 
-1. Go to https://dash.cloudflare.com and sign in.
-2. Left sidebar: **Workers & Pages** › **Create** › **Pages** tab ›
-   **Connect to Git**.
-3. Authorise Cloudflare to read GitHub. When it asks which repositories, choose
-   **Only select repositories** and pick `premier-growth-dashboard`.
-   It does not need access to anything else.
-4. Select the repo, then **Begin setup**.
-5. Build settings — leave everything empty:
+    https://wesley829.github.io/premier-growth-dashboard/
 
-   | Field | Value |
-   |---|---|
-   | Framework preset | None |
-   | Build command | *(leave blank)* |
-   | Build output directory | `/` |
+A push to `main` updates it within about a minute. No upload step exists any more,
+so the live copy cannot drift behind the repo.
 
-   There is no build step. The repo is served exactly as it is.
-6. **Save and Deploy.** After about a minute you get a URL like
-   `premier-growth-dashboard.pages.dev`.
-7. Open it, enter the new passcode, confirm the numbers load.
-8. Only then retire https://premier-dashboard.tiiny.site/ — and tell the team the
-   new address, or point a Premier subdomain at it.
+The repo had to be **public** for Pages to be free. Before that happened, the
+team's numbers, the Sheet link and the old passcode were all scrubbed from the
+repo and its history, so nothing in it is sensitive. Keep it that way: never
+commit `config.local.json` or anything from `backups/`.
 
-### Optional — put a real login in front
-
-Cloudflare **Zero Trust › Access** can require a Google or email login before the
-page will even open, on top of the passcode. Worth doing if the dashboard should
-not be readable by anyone who happens to have the link. Ask and I will write the
-steps out.
+**Still to do:** tell the team the new address, then retire
+https://premier-dashboard.tiiny.site/ — it serves an old file with the old
+passcode inside it.
 
 ---
 
@@ -75,5 +59,5 @@ steps out.
 | Week dates aligned to Mondays | done |
 | Repo is the single source of truth | done |
 | Passcode actually changed | **needs you — job 1 above** |
-| Site publishes itself | **needs you — job 2 above** |
+| Site publishes itself | done — GitHub Pages |
 | Weekly numbers | entered by hand on the **Enter the week** tab — by design, no platform connections |

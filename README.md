@@ -60,7 +60,8 @@ Changes stage locally in `.staged.json` and reach the team's copy only on `push`
 
 ## Deploying
 
-Served by GitHub Pages straight from `main`. Push and it is live.
+Served by GitHub Pages straight from `main` at
+https://wesley829.github.io/premier-growth-dashboard/ — push and it is live.
 
 The passcode is **not** in this repo or in `index.html`. Each person enters it once
 on their own browser and it is remembered there. If it ever needs changing, edit
