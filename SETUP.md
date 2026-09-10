@@ -9,7 +9,8 @@ Both are one-off. Neither takes long. Nothing else in this repo needs touching.
 The old passcode was written inside the dashboard file, which has been publicly
 readable for as long as the site has been up. Treat it as known and replace it.
 
-1. Open the Premier dashboard Sheet from your Google Drive.
+1. Open the Premier dashboard Sheet from your Google Drive (the one with the
+   Store / Weeks / Targets / Log tabs).
 2. Menu: **Extensions › Apps Script**. The storage script opens in a new tab.
 3. Line 14 reads `var PASSCODE = '...';` — replace what is between the quotes
    with the new passcode. Keep the quotes and the semicolon.

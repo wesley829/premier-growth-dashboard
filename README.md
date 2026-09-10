@@ -8,7 +8,7 @@ the page reads and writes it every few seconds.
 index.html        the dashboard — this file IS the site, and is the master copy
 apps-script.gs    the Sheet-side storage script
 premier.py        read/write the store from the terminal
-backups/          timestamped snapshots of the store
+backups/          timestamped snapshots of the store (local only, never committed)
 ```
 
 Pushing to `main` republishes the site. There is no build step and no upload:
