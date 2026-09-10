@@ -75,4 +75,4 @@ steps out.
 | Repo is the single source of truth | done |
 | Passcode actually changed | **needs you — job 1 above** |
 | Site publishes itself | **needs you — job 2 above** |
-| Real numbers flowing in | not started |
+| Weekly numbers | entered by hand on the **Enter the week** tab — by design, no platform connections |
