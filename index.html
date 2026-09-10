@@ -252,14 +252,6 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
       <button class="btn ghost" onclick="window.print()">Print</button>
     </div>
   </div>
-  <div class="banner" id="connectBar" hidden style="border-left-color:var(--navy)">
-    <p><b>Enter the team passcode to load the shared numbers.</b><br>
-       You will only be asked once on this browser. Ask Courtney if you do not have it.</p>
-    <div class="bnbtns">
-      <input type="password" id="connectPass" placeholder="Passcode" autocomplete="current-password" style="width:170px">
-      <button class="btn solid" id="connectGo">Connect</button>
-    </div>
-  </div>
   <div class="brandbar" id="cloudBar">
     <div style="flex:1 1 320px"><label>Web app URL</label><input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/…/exec"></div>
     <div><label>Passcode</label><input type="password" id="cloudPass" style="width:130px" autocomplete="current-password"></div>
@@ -290,7 +282,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v1.8 · 8 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v1.9 · 10 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -884,7 +876,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.8 · 8 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.9 · 10 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
@@ -1027,7 +1019,7 @@ $("#importFile").addEventListener("change",e=>{
    file is still how a week travels between people.                    */
 const LSKEY="premier-growth-dashboard-v1";
 let lastSaved=null,lastJSON="",storageOK=true,saveT=null;
-function queueSave(){clearTimeout(saveT);saveT=setTimeout(persist,500);if(typeof queueCloud==="function")queueCloud()}
+function queueSave(){clearTimeout(saveT);saveT=setTimeout(persist,500);if(typeof dirty!=="undefined"&&DATA.weeks[cur])dirty.add(DATA.weeks[cur].date);if(typeof queueCloud==="function")queueCloud()}
 try{localStorage.setItem(LSKEY+"-t","1");localStorage.removeItem(LSKEY+"-t")}catch(e){storageOK=false}
 function persist(){
  if(!storageOK)return;
@@ -1063,10 +1055,12 @@ window.addEventListener("beforeunload",persist);
    Velle: put the deployed Apps Script URL and the passcode here before
    uploading, and nobody else has to configure anything.               */
 const CLOUD_URL_DEFAULT="https://script.google.com/macros/s/AKfycbz8mrLvqSs-nCYxf1l3b7PUo1poZaiTxxFzULOcyAJr_1mFkIKU3MhCka9A0_SuqOWe_Q/exec";
-const CLOUD_PASS_DEFAULT="";   // never stored in this file — each person enters it once
+const CLOUD_PASS_DEFAULT="Premier123";   // open by design: the team wants the numbers visible to anyone with the link
 const CFGKEY="premier-growth-dashboard-cloud";
 let CFG={url:CLOUD_URL_DEFAULT,pass:CLOUD_PASS_DEFAULT,who:""},cloudRev=null,cloudState="",syncT=null,syncing=false;
+const dirty=new Set();   // weeks edited in this browser since the last successful push
 try{const c=JSON.parse(localStorage.getItem(CFGKEY)||"null"); if(c)CFG=Object.assign(CFG,c);}catch(e){}
+if(!CFG.url)CFG.url=CLOUD_URL_DEFAULT; if(!CFG.pass)CFG.pass=CLOUD_PASS_DEFAULT;
 function cfgSave(){try{localStorage.setItem(CFGKEY,JSON.stringify(CFG))}catch(e){}}
 function cloudOn(){return !!(CFG.url&&CFG.pass)}
 function cloudSay(msg,cls){cloudState=msg?`<span class="${cls||""}">${msg}</span>`:"";saveState()}
@@ -1079,7 +1073,15 @@ function cloudPull(quiet){
  return post({action:"load"}).then(j=>{
   if(!j||!j.ok){cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not reach the shared copy","a");return}
   cloudRev=j.rev;
-  if(j.data){const st={vals:0,weeks:0,clash:0}; mergeIn(j.data,st);
+  if(j.data){const st={vals:0,weeks:0,clash:0};
+   // The shared copy decides which weeks exist. A week this browser still holds
+   // that the team has removed is dropped, unless it was edited here and not yet
+   // pushed. Without this, one stale browser resurrects every deleted week.
+   const shared=new Set((j.data.weeks||[]).map(w=>w.date));
+   const before=DATA.weeks.length;
+   DATA.weeks=DATA.weeks.filter(w=>shared.has(w.date)||dirty.has(w.date)||!weekHasAnything(w));
+   if(DATA.weeks.length!==before)st.weeks++;
+   mergeIn(j.data,st);
    if(st.vals||st.weeks){cur=Math.min(cur,DATA.weeks.length-1);buildWeekSel();renderActive();lastJSON="";persist()}}
   if(!quiet)cloudSay("Up to date with the team");
  }).catch(()=>cloudSay("Could not reach the shared copy","a"));
@@ -1095,7 +1097,7 @@ function cloudPush(){
     if(k&&k.ok){cloudRev=k.rev;cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
    });
   }
-  if(j&&j.ok){cloudRev=j.rev;cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
+  if(j&&j.ok){cloudRev=j.rev;dirty.clear();cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
   else cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not save to the shared copy","a");
  }).catch(()=>cloudSay("Could not save to the shared copy","a")).then(()=>{syncing=false});
 }
@@ -1112,21 +1114,11 @@ $("#cloudBar").addEventListener("input",e=>{
  if(t.id==="cloudWho")CFG.who=t.value.trim();
  cfgSave();
 });
-function showConnect(){const b=$("#connectBar"); if(b)b.hidden=cloudOn()}
-function tryConnect(){
- const v=($("#connectPass").value||"").trim(); if(!v)return;
- CFG.pass=v; cfgSave(); cloudFields(); showConnect();
- cloudSay("Connecting…");
- cloudPull().then(()=>{ if(!cloudOn()||cloudRev==null){CFG.pass="";cfgSave();showConnect();cloudSay("Passcode not accepted","a")}
-  else {ensureCurrentWeek(true);buildWeekSel();renderActive()} });
-}
-$("#connectGo").onclick=tryConnect;
-$("#connectPass").addEventListener("keydown",e=>{if(e.key==="Enter")tryConnect()});
 $("#cloudSync").onclick=()=>cloudPull().then(cloudPush);
 $("#cloudOff").onclick=()=>{CFG.url="";CFG.pass="";cfgSave();cloudFields();cloudRev=null;cloudSay("")};
 
 ensureCurrentWeek(true);
-applyBrand(); buildWeekSel(); goto("status"); saveState(); cloudFields(); showConnect();
+applyBrand(); buildWeekSel(); goto("status"); saveState(); cloudFields();
 if(cloudOn()){cloudPull().then(()=>{ensureCurrentWeek(true);buildWeekSel();renderActive()});
  setInterval(()=>{if(!syncing)cloudPull(true)},30000)}
 })();

@@ -8,7 +8,7 @@ the page reads and writes it every few seconds.
 index.html        the dashboard — this file IS the site, and is the master copy
 apps-script.gs    the Sheet-side storage script
 premier.py        read/write the store from the terminal
-backups/          timestamped snapshots of the store (local only, never committed)
+../premier-dashboard-backups/   timestamped store snapshots, kept outside the repo
 ```
 
 Pushing to `main` republishes the site. There is no build step and no upload:
@@ -63,9 +63,13 @@ Changes stage locally in `.staged.json` and reach the team's copy only on `push`
 Served by GitHub Pages straight from `main` at
 https://wesley829.github.io/premier-growth-dashboard/ — push and it is live.
 
-The passcode is **not** in this repo or in `index.html`. Each person enters it once
-on their own browser and it is remembered there. If it ever needs changing, edit
-`PASSCODE` in `apps-script.gs`, redeploy the Apps Script, and tell the team the new one.
+There is no passcode prompt: the page loads the shared numbers for anyone with the
+link, by decision. See `SETUP.md` for what that implies.
+
+Which weeks exist is decided by the shared copy. A browser that still holds a week
+the team has removed drops it on its next sync — unless it was edited in that
+browser and not yet pushed, in which case it is kept and pushed. Remove a week with
+`./premier.py delete 2026-09-28 && ./premier.py push`.
 
 The old hand-uploaded copy at https://premier-dashboard.tiiny.site/ can be retired
 once the Pages URL is confirmed working.

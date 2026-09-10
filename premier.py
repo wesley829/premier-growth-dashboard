@@ -6,6 +6,7 @@
   ./premier.py backup                     save a timestamped copy to backups/
   ./premier.py set WEEK k=v [k=v ...]     stage a change to one week
   ./premier.py set-target k=v [...]       stage a change to targets
+  ./premier.py delete WEEK                 stage removal of a whole week
   ./premier.py push                       send staged changes (asks first)
 
 WEEK is a Monday in YYYY-MM-DD, or "current" for this week's Monday.
@@ -83,8 +84,9 @@ def main():
 
     elif cmd == "backup":
         j = pull()
-        p = os.path.join(HERE,"backups",
-            f"store-rev{j['rev']}-{datetime.date.today().isoformat()}.json")
+        d = os.path.join(os.path.dirname(HERE), "premier-dashboard-backups")  # outside the repo
+        os.makedirs(d, exist_ok=True)
+        p = os.path.join(d, f"store-rev{j['rev']}-{datetime.date.today().isoformat()}.json")
         json.dump(j, open(p,"w"), indent=1); print("saved", p)
 
     elif cmd in ("set","set-target"):
@@ -123,6 +125,16 @@ def main():
         if not j.get("ok"): sys.exit("Save failed: " + str(j.get("error")))
         os.remove(STAGE)
         print(f"Saved. rev {st['rev']} -> {j['rev']} at {j['updated']}")
+
+    elif cmd == "delete":
+        if not args: sys.exit("usage: delete WEEK")
+        st = staged(); date = monday(args[0])
+        weeks = st["data"].setdefault("weeks",[])
+        w = next((x for x in weeks if x.get("date")==date), None)
+        if w is None: sys.exit(f"no week {date}")
+        weeks.remove(w); st["changes"].append(f"delete week {date}")
+        json.dump(st, open(STAGE,"w"), indent=1)
+        print(f"  staged: remove {date}\n\nRun: ./premier.py push")
 
     elif cmd == "unstage":
         if os.path.exists(STAGE): os.remove(STAGE); print("staging cleared")
