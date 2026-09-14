@@ -46,6 +46,8 @@ passcode inside it.
 | Passcode prompt | removed in v1.9 — open by design |
 | Week dates aligned to Mondays | done |
 | Repo is the single source of truth | done |
-| Deleted weeks stay deleted | fixed in v1.9 — shared copy is the authority |
+| Deleted weeks stay deleted | v1.9 |
+| Notes and numbers can no longer be clobbered by a stale tab | v2.0 |
+| Revenue from marketing + Marketing ROI (Jon) | v2.0 |
 | Site publishes itself | done — GitHub Pages |
 | Weekly numbers | entered by hand on the **Enter the week** tab — by design, no platform connections |

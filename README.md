@@ -28,9 +28,9 @@ dashboard merges and retries.
 
 ## The data model
 
-Weeks are keyed by the Monday of that week. Thirty-two raw inputs are typed in
+Weeks are keyed by the Monday of that week. Thirty-three raw inputs are typed in
 (`SKEYS` in the HTML); everything else — margins, conversion rates, cost per lead,
-EBITDA — is derived in `D(w)` and never stored. Add a field to `SKEYS` and it flows
+marketing ROI, EBITDA — is derived in `D(w)` and never stored. Add a field to `SKEYS` and it flows
 through to the Sheet automatically; the Apps Script takes its columns from the data.
 
 Six systems, each with an owner:
@@ -66,10 +66,26 @@ https://wesley829.github.io/premier-growth-dashboard/ — push and it is live.
 There is no passcode prompt: the page loads the shared numbers for anyone with the
 link, by decision. See `SETUP.md` for what that implies.
 
-Which weeks exist is decided by the shared copy. A browser that still holds a week
-the team has removed drops it on its next sync — unless it was edited in that
-browser and not yet pushed, in which case it is kept and pushed. Remove a week with
-`./premier.py delete 2026-09-28 && ./premier.py push`.
+## How sync works (v2.0)
+
+The shared copy is the authority. A browser may overwrite only the exact fields it
+has edited since its last successful push — tracked per field, remembered across
+reloads — and adopts everything else from the team, including fields this version
+of the page has never heard of. Opening the page writes nothing. Deleting a week
+propagates. **Reload from team** resets one browser and cannot touch the Sheet.
+
+This replaces an additive merge that concatenated notes on every pull and let a
+stale tab push old numbers over someone's correction.
+
+Remove a week from the terminal with `./premier.py delete 2026-09-28 && ./premier.py push`.
+
+## Adding a field
+
+Add the key to `SKEYS`, a label in `FIELDS`, a definition in `DEFS`, and if it is
+a measure, a row in `M` and a line in `D(w)`. Nothing else: the Sheet takes its
+columns from the data, and older copies of the page carry unknown fields through
+untouched. Never test two copies of the page on the same origin — they share
+browser storage, and an edit made on one will be pushed by the other.
 
 The old hand-uploaded copy at https://premier-dashboard.tiiny.site/ can be retired
 once the Pages URL is confirmed working.
