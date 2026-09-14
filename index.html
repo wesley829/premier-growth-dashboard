@@ -243,7 +243,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
   <div class="banner">
     <p id="bannerTxt"></p>
     <div class="bnbtns">
-      <button class="btn ghost" id="clearAll">Clear all data</button>
+      <button class="btn ghost" id="clearAll">Reload from team</button>
       <button class="btn ghost" id="exportBtn">Save to file</button>
       <button class="btn ghost" id="importBtn">Load and merge files</button>
       <input type="file" id="importFile" accept="application/json" multiple hidden>
@@ -282,7 +282,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v1.9 · 10 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v2.0 · 14 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -303,6 +303,8 @@ const DEFS={
  leads:"Every new enquiry received this week, from any source. One person counts once, even if they contact twice.",
  qualifiedLeads:"Leads that meet the agreed definition of qualified. TO CONFIRM: Premier has not yet agreed what qualified means, so this number is not comparable week to week until it does.",
  marketingSpend:"Everything spent on generating demand this week. Ad spend plus agency fees.",
+ marketingRevenue:"Money collected this week from patients who came through marketing. Jon decides the attribution rule, and it must stay the same every week, or the ROI will move for reasons that have nothing to do with the marketing.",
+ marketingROI:"Revenue from marketing less marketing spend, as a share of marketing spend. $3 back for every $1 spent shows as 200%. Only as good as the attribution rule behind revenue from marketing.",
  contacted:"Leads a person actually spoke to or messaged directly. An automated reply does not count.",
  booked:"Leads who have an appointment in the diary, whatever date it falls on.",
  cancelled:"Appointments the patient cancelled in advance.",
@@ -368,7 +370,7 @@ const SYS=[
 ];
 
 const FIELDS=[
- {g:"Demand · Jon",f:[["leads","Leads received"],["qualifiedLeads","Qualified leads"],["marketingSpend","Marketing spend ($)"]]},
+ {g:"Demand · Jon",f:[["leads","Leads received"],["qualifiedLeads","Qualified leads"],["marketingSpend","Marketing spend ($)"],["marketingRevenue","Revenue from marketing ($)"]]},
  {g:"Conversion · Brittany",f:[["contacted","Contacted"],["booked","Appointments booked"],["cancelled","Cancelled"],["noShow","Did not attend"],["attended","Attended"],["purchased","Purchased"]]},
  {g:"Patients · Brittany / Courtney",f:[["newPatients","New patients"],["returningPatients","Returning patients"],["reactivatedPatients","Reactivated patients"]]},
  {g:"Delivery · Courtney",f:[["slotsAvailable","Appointment slots available"],["slotsUsed","Slots used"],["rebooked","Left with next appointment"]]},
@@ -399,6 +401,8 @@ function D(w){
  r.mktPct=p(g("marketingSpend"),rev);
  r.cpl=div(g("marketingSpend"),g("leads")); r.cpql=div(g("marketingSpend"),g("qualifiedLeads"));
  r.cac=div(g("marketingSpend"),g("newPatients"));
+ r.marketingRevenue=g("marketingRevenue");
+ r.marketingROI=(g("marketingRevenue")==null||!g("marketingSpend"))?null:(g("marketingRevenue")-g("marketingSpend"))/g("marketingSpend")*100;
  r.contactRate=p(g("contacted"),g("leads")); r.bookingRate=p(g("booked"),g("contacted"));
  r.showRate=p(g("attended"),g("booked")); r.purchaseRate=p(g("purchased"),g("attended"));
  r.leadToPurchase=p(g("purchased"),g("leads")); r.noShowRate=p(g("noShow"),g("booked"));
@@ -419,6 +423,8 @@ const M=[
  {k:"cpl",l:"Cost per lead",s:"lead",o:"Jon",f:"money",d:"lo",core:1},
  {k:"cpql",l:"Cost per qualified lead",s:"lead",o:"Jon",f:"money",d:"lo"},
  {k:"marketingSpend",l:"Marketing spend",s:"lead",o:"Jon",f:"money",d:"info"},
+ {k:"marketingRevenue",l:"Revenue from marketing",s:"lead",o:"Jon",f:"money",d:"hi"},
+ {k:"marketingROI",l:"Marketing ROI",s:"lead",o:"Jon",f:"pct",d:"hi",core:1},
  {k:"contactRate",l:"Leads contacted",s:"conv",o:"Brittany",f:"pct",d:"hi"},
  {k:"bookingRate",l:"Booking conversion",s:"conv",o:"Brittany",f:"pct",d:"hi",core:1},
  {k:"showRate",l:"Attendance rate",s:"conv",o:"Brittany",f:"pct",d:"hi",core:1},
@@ -455,7 +461,7 @@ const M=[
 /* No default targets. Premier sets each one, with its owner, from its own data. */
 const DEF_TARGETS=(()=>{const o={};M.forEach(x=>{if(x.d!=="info")o[x.k]=""});return o})();
 
-const SKEYS=["leads","qualifiedLeads","marketingSpend","contacted","booked","cancelled","noShow","attended","purchased",
+const SKEYS=["leads","qualifiedLeads","marketingSpend","marketingRevenue","contacted","booked","cancelled","noShow","attended","purchased",
  "newPatients","returningPatients","reactivatedPatients","slotsAvailable","slotsUsed","rebooked",
  "revWeight","revHRT","revAes","revWellness","cogs","providerCost","opex","actionsAgreed","actionsCompleted","experimentsRun",
  "programmePatients","programmeStarts","draftStarts","programmeCancelled","draftScheduled","draftCollected","draftFailed"];
@@ -467,7 +473,7 @@ function ensureCurrentWeek(select){
  return i;
 }
 function blankWeek(date){const w={date:date||todayMonday()};SKEYS.forEach(k=>w[k]="");return w}
-function todayMonday(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
+function todayMonday(){const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function wLabel(w){const d=new Date(w.date+"T00:00");return isNaN(d)?"New week":"w/c "+d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}
 
 const LEVERS=[
@@ -811,7 +817,7 @@ function renderEntry(){
 function derived(){
  const d=D(DATA.weeks[cur]);
  const items=[["Revenue",money(d.rev)],["Gross profit",money(d.gp)],["Gross margin",pctf(d.gm)],["EBITDA",money(d.ebitda)],
-  ["Cost per lead",money(d.cpl)],["Booking conversion",pctf(d.bookingRate)],["Lead to purchase",pctf(d.leadToPurchase)],
+  ["Cost per lead",money(d.cpl)],["Marketing ROI",pctf(d.marketingROI)],["Booking conversion",pctf(d.bookingRate)],["Lead to purchase",pctf(d.leadToPurchase)],
   ["Average spend",money(d.atv)],["Utilisation",pctf(d.util)],["Rebooking",pctf(d.rebookRate)]];
  const el=$("#derived"); if(el)el.innerHTML=`<div class="hstat" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
   ${items.map(([l,v])=>`<div><i>${l}</i><b>${v}</b></div>`).join("")}</div>`;
@@ -876,7 +882,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v1.9 · 10 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.0 · 14 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
@@ -887,21 +893,22 @@ $("#nextW").onclick=()=>{if(cur<DATA.weeks.length-1){cur++;buildWeekSel();render
 
 document.addEventListener("input",e=>{
  const t=e.target;
- if(t.dataset.w!==undefined&&t.dataset.w!==""){DATA.weeks[cur][t.dataset.w]=t.value;derived();}
- if(t.dataset.t)DATA.targets[t.dataset.t]=t.value;
- if(t.dataset.a!==undefined&&t.dataset.a!=="")DATA.actions[t.dataset.a]=t.value;
- if(t.dataset.f2)DATA.rag[t.dataset.f2]=t.value;
- if(t.id==="interimLabel")DATA.interimLabel=t.value;
- if(t.dataset.plan)DATA.plan[t.dataset.plan]=t.value;
- if(t.dataset.o!==undefined&&t.dataset.o!==""){DATA.owners=DATA.owners||{};DATA.owners[t.dataset.o]=t.value}
- if(t.dataset.lo!==undefined&&t.dataset.lo!==""){DATA.planOwners=DATA.planOwners||{};DATA.planOwners[t.dataset.lo]=t.value}
- if(t.id==="wnote")DATA.weeks[cur].note=t.value;
+ const wd=DATA.weeks[cur]&&DATA.weeks[cur].date;
+ if(t.dataset.w!==undefined&&t.dataset.w!==""){DATA.weeks[cur][t.dataset.w]=t.value;mark(wd+"|"+t.dataset.w);derived();}
+ if(t.dataset.t){DATA.targets[t.dataset.t]=t.value;mark("targets|"+t.dataset.t)}
+ if(t.dataset.a!==undefined&&t.dataset.a!==""){DATA.actions[t.dataset.a]=t.value;mark("actions|"+t.dataset.a)}
+ if(t.dataset.f2){DATA.rag[t.dataset.f2]=t.value;mark("rag|"+t.dataset.f2)}
+ if(t.id==="interimLabel"){DATA.interimLabel=t.value;mark("top|interimLabel")}
+ if(t.dataset.plan){DATA.plan[t.dataset.plan]=t.value;mark("plan|"+t.dataset.plan)}
+ if(t.dataset.o!==undefined&&t.dataset.o!==""){DATA.owners=DATA.owners||{};DATA.owners[t.dataset.o]=t.value;mark("owners|"+t.dataset.o)}
+ if(t.dataset.lo!==undefined&&t.dataset.lo!==""){DATA.planOwners=DATA.planOwners||{};DATA.planOwners[t.dataset.lo]=t.value;mark("planOwners|"+t.dataset.lo)}
+ if(t.id==="wnote"){DATA.weeks[cur].note=t.value;mark(wd+"|note")}
  queueSave();
 });
 document.addEventListener("change",e=>{
  const t=e.target; queueSave();
- if(t.id==="monthlyTarget"){DATA.monthlyTarget=t.value===""?"":(+t.value||0);keepFocus(renderStatus)}
- if(t.id==="destTarget"){DATA.destination=t.value===""?"":(+t.value||0);keepFocus(renderStatus)}
+ if(t.id==="monthlyTarget"){DATA.monthlyTarget=t.value===""?"":(+t.value||0);mark("top|monthlyTarget");keepFocus(renderStatus)}
+ if(t.id==="destTarget"){DATA.destination=t.value===""?"":(+t.value||0);mark("top|destination");keepFocus(renderStatus)}
  if(t.dataset.plan)keepFocus(renderStatus);
  if(t.dataset.t&&active==="scorecard")keepFocus(renderScorecard);
 });
@@ -910,20 +917,23 @@ document.addEventListener("click",e=>{
  const tile=e.target.closest(".tile"); if(tile){drill(tile.dataset.sys);return}
  if(e.target.closest("[data-close]")){openSys=null;renderStatus();return}
  const rb=e.target.closest(".ragsel button");
- if(rb){const k=rb.parentElement.dataset.k,v=rb.dataset.v;DATA.rag[k]=DATA.rag[k]===v?null:v;renderAudit();return}
+ if(rb){const k=rb.parentElement.dataset.k,v=rb.dataset.v;DATA.rag[k]=DATA.rag[k]===v?null:v;mark("rag|"+k);renderAudit();return}
  if(e.target.id==="coreTog"){coreOnly=!coreOnly;renderScorecard();return}
  if(e.target.id==="toCurrent"){ensureCurrentWeek(true);buildWeekSel();renderEntry();return}
  if(e.target.id==="delWeek"){
   if(DATA.weeks.length<2){alert("Keep at least one week.");return}
   if(!confirm("Delete "+wLabel(DATA.weeks[cur])+"?"))return;
+  const gone=DATA.weeks[cur].date; removed.add(gone); [...dirty].forEach(k=>{if(k.startsWith(gone+"|"))dirty.delete(k)});
   DATA.weeks.splice(cur,1);cur=Math.max(0,cur-1);buildWeekSel();renderEntry();return}
 });
 
 $("#clearAll").onclick=()=>{
- if(!confirm("Clear every week, target and note in this file? Save to file first if you need it."))return;
+ if(!confirm("Reset this browser's copy and reload the team's numbers from the shared sheet? Nothing on the sheet is changed."))return;
  const keepBrand=DATA.brand; DATA=freshData(); DATA.brand=keepBrand||DATA.brand;
+ dirty.clear(); removed.clear(); dirtyAll=false;
  cur=0; openSys=null; try{localStorage.removeItem(LSKEY)}catch(e){} lastJSON=""; lastSaved=null;
  applyBrand(); buildWeekSel(); renderActive(); saveState();
+ if(typeof cloudPull==="function")cloudPull().then(()=>{ensureCurrentWeek(true);buildWeekSel();renderActive()});
 };
 
 /* ---- brand colours ---- */
@@ -946,7 +956,7 @@ function applyBrand(){
 }
 $("#brandBtn").onclick=()=>$("#brandBar").classList.toggle("on");
 $("#brandReset").onclick=()=>{DATA.brand=Object.assign({},DEF_BRAND);applyBrand();renderActive()};
-$("#brandBar").addEventListener("input",e=>{
+$("#brandBar").addEventListener("input",e=>{mark("brand");
  const t=e.target, k=t.dataset.brand||t.dataset.brandhex; if(!k)return;
  const v=t.value.trim(); if(!/^#?[0-9a-fA-F]{6}$/.test(v))return;
  DATA.brand=DATA.brand||Object.assign({},DEF_BRAND);
@@ -1005,7 +1015,7 @@ $("#importFile").addEventListener("change",e=>{
   rd.onerror=()=>{st.bad++;res()};
   rd.readAsText(f);
  }))).then(()=>{
-  cur=DATA.weeks.length-1; applyBrand(); buildWeekSel(); renderActive(); lastJSON=""; persist();
+  dirtyAll=true; cur=DATA.weeks.length-1; applyBrand(); buildWeekSel(); renderActive(); lastJSON=""; persist();
   saveState(`Merged <b>${st.files} file${st.files===1?"":"s"}</b>: ${st.vals} value${st.vals===1?"":"s"} added, ${st.weeks} new week${st.weeks===1?"":"s"}.`
    +(st.clash?` <b style="color:var(--amber)">${st.clash} entr${st.clash===1?"y":"ies"} already had a different number and were left as they were.</b>`:"")
    +(st.bad?` <b style="color:var(--red)">${st.bad} file could not be read.</b>`:""));
@@ -1019,12 +1029,19 @@ $("#importFile").addEventListener("change",e=>{
    file is still how a week travels between people.                    */
 const LSKEY="premier-growth-dashboard-v1";
 let lastSaved=null,lastJSON="",storageOK=true,saveT=null;
-function queueSave(){clearTimeout(saveT);saveT=setTimeout(persist,500);if(typeof dirty!=="undefined"&&DATA.weeks[cur])dirty.add(DATA.weeks[cur].date);if(typeof queueCloud==="function")queueCloud()}
+/* The shared copy is the authority. The only things this browser is allowed to
+   overwrite are the exact fields it has edited since its last successful push.
+   dirty holds those as "date|field" or "map|key"; removed holds weeks deleted
+   here; dirtyAll is set after a file import, when everything local should win. */
+const dirty=new Set(), removed=new Set(); let dirtyAll=false, staleNotice=false;
+function mark(k){dirty.add(k)}
+function snapshot(){return JSON.stringify({d:DATA,x:[...dirty],r:[...removed],a:dirtyAll})}
+function queueSave(){clearTimeout(saveT);saveT=setTimeout(persist,500);if(typeof queueCloud==="function")queueCloud()}
 try{localStorage.setItem(LSKEY+"-t","1");localStorage.removeItem(LSKEY+"-t")}catch(e){storageOK=false}
 function persist(){
  if(!storageOK)return;
- try{const j=JSON.stringify(DATA); if(j===lastJSON)return;
-  localStorage.setItem(LSKEY,JSON.stringify({saved:new Date().toISOString(),data:DATA}));
+ try{const j=snapshot(); if(j===lastJSON)return;
+  localStorage.setItem(LSKEY,JSON.stringify({saved:new Date().toISOString(),data:DATA,dirty:[...dirty],removed:[...removed],dirtyAll:dirtyAll}));
   lastJSON=j; lastSaved=new Date(); saveState();
  }catch(e){storageOK=false;saveState()}
 }
@@ -1036,7 +1053,8 @@ function restore(){
   DATA.brand=Object.assign({},DEF_BRAND,j.data.brand||{});
   DATA.targets=Object.assign({},DEF_TARGETS,j.data.targets||{});
   DATA.plan=Object.assign({},ZERO_PLAN,j.data.plan||{});
-  cur=DATA.weeks.length-1; lastSaved=new Date(j.saved); lastJSON=JSON.stringify(DATA); return true;
+  (j.dirty||[]).forEach(k=>dirty.add(k)); (j.removed||[]).forEach(k=>removed.add(k)); dirtyAll=!!j.dirtyAll;
+  cur=DATA.weeks.length-1; lastSaved=new Date(j.saved); lastJSON=snapshot(); return true;
  }catch(e){return false}
 }
 function saveState(msg){
@@ -1045,7 +1063,8 @@ function saveState(msg){
  const local=!storageOK
   ? `<b style="color:var(--amber)">This browser is not storing anything.</b> Use Save to file before you close the tab.`
   : (lastSaved?`Saved in this browser at ${lastSaved.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}`:"Nothing entered yet");
- el.innerHTML=local+(cloudState?" &nbsp;·&nbsp; "+cloudState:(cloudOn()?"":" &nbsp;·&nbsp; Not connected to the shared sheet"));
+ el.innerHTML=local+(cloudState?" &nbsp;·&nbsp; "+cloudState:(cloudOn()?"":" &nbsp;·&nbsp; Not connected to the shared sheet"))
+  +(staleNotice?' &nbsp;·&nbsp; <b style="color:var(--amber)">A newer version of this dashboard exists. Refresh the page to get it.</b>':"");
 }
 restore();
 setInterval(persist,1500);
@@ -1058,7 +1077,6 @@ const CLOUD_URL_DEFAULT="https://script.google.com/macros/s/AKfycbz8mrLvqSs-nCYx
 const CLOUD_PASS_DEFAULT="Premier123";   // open by design: the team wants the numbers visible to anyone with the link
 const CFGKEY="premier-growth-dashboard-cloud";
 let CFG={url:CLOUD_URL_DEFAULT,pass:CLOUD_PASS_DEFAULT,who:""},cloudRev=null,cloudState="",syncT=null,syncing=false;
-const dirty=new Set();   // weeks edited in this browser since the last successful push
 try{const c=JSON.parse(localStorage.getItem(CFGKEY)||"null"); if(c)CFG=Object.assign(CFG,c);}catch(e){}
 if(!CFG.url)CFG.url=CLOUD_URL_DEFAULT; if(!CFG.pass)CFG.pass=CLOUD_PASS_DEFAULT;
 function cfgSave(){try{localStorage.setItem(CFGKEY,JSON.stringify(CFG))}catch(e){}}
@@ -1068,36 +1086,72 @@ function post(body){
  return fetch(CFG.url,{method:"POST",body:JSON.stringify(Object.assign({pass:CFG.pass},body))})
   .then(r=>r.json());
 }
+/* Take the team's copy as the truth for everything this browser has not itself
+   edited since its last push. Fields the page does not know about are carried
+   through untouched, so an older copy of this page can never strip a field a
+   newer one added. Returns how many things changed. */
+function adoptShared(j){
+ if(dirtyAll)return 0;                       // a file import is waiting to be pushed; local wins for now
+ let changed=0; const now=todayMonday();
+ const shared=j.weeks||[], keep=new Set(shared.map(w=>w.date));
+ const curDate=DATA.weeks[cur]&&DATA.weeks[cur].date;
+ const dirtyWeek=d=>[...dirty].some(k=>k.startsWith(d+"|"));
+ const before=DATA.weeks.length;
+ DATA.weeks=DATA.weeks.filter(w=>keep.has(w.date)||dirtyWeek(w.date)||(w.date===now&&!weekHasAnything(w)));
+ changed+=before-DATA.weeks.length;
+ const known=new Set(SKEYS.concat(["date","note"]));
+ shared.forEach(sw=>{
+  if(removed.has(sw.date))return;
+  let lw=DATA.weeks.find(x=>x.date===sw.date);
+  if(!lw){lw=blankWeek(sw.date);DATA.weeks.push(lw);changed++}
+  Object.keys(sw).forEach(k=>{ if(k==="date")return;
+   if(!known.has(k))staleNotice=true;
+   if(dirty.has(sw.date+"|"+k))return;
+   const v=sw[k]==null?"":sw[k]; if(String(lw[k]==null?"":lw[k])!==String(v)){lw[k]=v;changed++} });
+  Object.keys(lw).forEach(k=>{ if(k==="date"||k in sw||dirty.has(sw.date+"|"+k))return;
+   if(!isEmpty(lw[k])){lw[k]="";changed++} });
+ });
+ DATA.weeks.sort((x,y)=>String(x.date).localeCompare(String(y.date)));
+ [["targets",DEF_TARGETS],["rag",{}],["actions",{}],["plan",ZERO_PLAN],["owners",{}],["planOwners",{}]].forEach(([name,base])=>{
+  const sm=j[name]||{}; const lm=DATA[name]=DATA[name]||Object.assign({},base);
+  new Set(Object.keys(sm).concat(Object.keys(lm))).forEach(k=>{
+   if(dirty.has(name+"|"+k))return;
+   const v=sm[k]==null?"":sm[k]; if(String(lm[k]==null?"":lm[k])!==String(v)){lm[k]=v;changed++} });
+ });
+ ["destination","monthlyTarget","interimLabel"].forEach(k=>{
+  if(dirty.has("top|"+k)||!(k in j))return;
+  if(String(DATA[k]==null?"":DATA[k])!==String(j[k]==null?"":j[k])){DATA[k]=j[k];changed++} });
+ if(j.brand&&!dirty.has("brand")){const b=Object.assign({},DEF_BRAND,j.brand);
+  if(JSON.stringify(b)!==JSON.stringify(DATA.brand)){DATA.brand=b;applyBrand();changed++}}
+ if(!DATA.weeks.length)DATA.weeks.push(blankWeek());
+ const i=DATA.weeks.findIndex(w=>w.date===curDate); cur=i>=0?i:Math.max(0,Math.min(cur,DATA.weeks.length-1));
+ return changed;
+}
 function cloudPull(quiet){
  if(!cloudOn())return Promise.resolve();
  return post({action:"load"}).then(j=>{
   if(!j||!j.ok){cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not reach the shared copy","a");return}
   cloudRev=j.rev;
-  if(j.data){const st={vals:0,weeks:0,clash:0};
-   // The shared copy decides which weeks exist. A week this browser still holds
-   // that the team has removed is dropped, unless it was edited here and not yet
-   // pushed. Without this, one stale browser resurrects every deleted week.
-   const shared=new Set((j.data.weeks||[]).map(w=>w.date));
-   const before=DATA.weeks.length;
-   DATA.weeks=DATA.weeks.filter(w=>shared.has(w.date)||dirty.has(w.date)||!weekHasAnything(w));
-   if(DATA.weeks.length!==before)st.weeks++;
-   mergeIn(j.data,st);
-   if(st.vals||st.weeks){cur=Math.min(cur,DATA.weeks.length-1);buildWeekSel();renderActive();lastJSON="";persist()}}
+  if(j.data&&adoptShared(j.data)){keepFocus(()=>{buildWeekSel();renderActive()});lastJSON="";persist()}
   if(!quiet)cloudSay("Up to date with the team");
  }).catch(()=>cloudSay("Could not reach the shared copy","a"));
 }
 function cloudPush(){
  if(!cloudOn()||syncing)return Promise.resolve();
+ if(!dirty.size&&!removed.size&&!dirtyAll)return Promise.resolve();   // nothing of ours to send
  syncing=true; cloudSay("Saving for the team…");
+ const sent=snapshot();
+ const done=k=>{cloudRev=k.rev;
+  // only forget our edits if nothing changed while the save was in flight
+  if(snapshot()===sent){dirty.clear();removed.clear();dirtyAll=false;lastJSON="";persist()} else queueCloud();
+  cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))};
  return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(j=>{
-  if(j&&j.conflict){ // somebody saved first: take theirs, merge, send once more
-   const st={vals:0,weeks:0,clash:0}; if(j.data)mergeIn(j.data,st);
-   cloudRev=j.rev; buildWeekSel(); renderActive(); lastJSON=""; persist(); syncing=false;
+  if(j&&j.conflict){ // somebody saved first: take theirs, keep our edits on top, send once more
+   cloudRev=j.rev; if(j.data&&adoptShared(j.data)){keepFocus(()=>{buildWeekSel();renderActive()});lastJSON="";persist()}
    return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(k=>{
-    if(k&&k.ok){cloudRev=k.rev;cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
-   });
+    if(k&&k.ok)done(k); else cloudSay("Could not save to the shared copy","a")});
   }
-  if(j&&j.ok){cloudRev=j.rev;dirty.clear();cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}
+  if(j&&j.ok)done(j);
   else cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not save to the shared copy","a");
  }).catch(()=>cloudSay("Could not save to the shared copy","a")).then(()=>{syncing=false});
 }

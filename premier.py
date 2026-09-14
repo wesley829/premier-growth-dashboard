@@ -36,7 +36,7 @@ def _cfg():
 URL, PASS, WHO = _cfg()
 STAGE = os.path.join(HERE, ".staged.json")
 
-SKEYS = ["leads","qualifiedLeads","marketingSpend","contacted","booked","cancelled","noShow",
+SKEYS = ["leads","qualifiedLeads","marketingSpend","marketingRevenue","contacted","booked","cancelled","noShow",
  "attended","purchased","newPatients","returningPatients","reactivatedPatients","slotsAvailable",
  "slotsUsed","rebooked","revWeight","revHRT","revAes","revWellness","cogs","providerCost","opex",
  "actionsAgreed","actionsCompleted","experimentsRun","programmePatients","programmeStarts",
@@ -52,6 +52,8 @@ def call(body):
 
 def pull():
     j = call({"action":"load"})
+    if not j.get("ok"):                      # Apps Script occasionally returns one bad reply
+        import time; time.sleep(2); j = call({"action":"load"})
     if not j.get("ok"): sys.exit("Load failed: " + str(j.get("error")))
     return j
 
