@@ -282,7 +282,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v2.0 · 14 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v2.1 · 15 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -882,7 +882,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.0 · 14 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.1 · 15 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
@@ -1145,14 +1145,14 @@ function cloudPush(){
   // only forget our edits if nothing changed while the save was in flight
   if(snapshot()===sent){dirty.clear();removed.clear();dirtyAll=false;lastJSON="";persist()} else queueCloud();
   cloudSay("Shared copy updated at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))};
- return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(j=>{
+ return post({action:"save",v:2,data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(j=>{
   if(j&&j.conflict){ // somebody saved first: take theirs, keep our edits on top, send once more
    cloudRev=j.rev; if(j.data&&adoptShared(j.data)){keepFocus(()=>{buildWeekSel();renderActive()});lastJSON="";persist()}
-   return post({action:"save",data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(k=>{
+   return post({action:"save",v:2,data:DATA,who:CFG.who||"not named",rev:cloudRev}).then(k=>{
     if(k&&k.ok)done(k); else cloudSay("Could not save to the shared copy","a")});
   }
   if(j&&j.ok)done(j);
-  else cloudSay(j&&j.error==="passcode"?"Passcode not accepted":"Could not save to the shared copy","a");
+  else cloudSay(j&&j.error==="passcode"?"Passcode not accepted":j&&j.error==="old page"?"This copy of the dashboard is out of date and cannot save. Refresh the page.":"Could not save to the shared copy","a");
  }).catch(()=>cloudSay("Could not save to the shared copy","a")).then(()=>{syncing=false});
 }
 function queueCloud(){if(!cloudOn())return;clearTimeout(syncT);syncT=setTimeout(cloudPush,3000)}

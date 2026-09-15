@@ -13,6 +13,11 @@
 
 var PASSCODE = 'CHANGE-ME';   // must match the passcode entered in the dashboard
 
+// Pages older than this can read the shared copy but not write to it. Old copies
+// of the dashboard (anything before v2.0, including the retired tiiny.site one)
+// merged a stale browser's numbers over everyone else's on every save.
+var MIN_CLIENT = 2;
+
 // Leave blank if you opened this editor from the Sheet itself
 // (Extensions > Apps Script). If you created the project separately at
 // script.google.com, paste the Sheet's id here. It is the long code in the
@@ -35,7 +40,13 @@ function doPost(e) {
 
   if (body.pass !== PASSCODE) return out_({ ok: false, error: 'passcode' });
   if (body.action === 'load') return out_(load_());
-  if (body.action === 'save') return out_(save_(body.data, body.who, body.rev));
+  if (body.action === 'save') {
+    if (!(Number(body.v) >= MIN_CLIENT)) {
+      logLine_((body.who || 'not named') + ' — REFUSED, old page', 0, 'refused');
+      return out_({ ok: false, error: 'old page' });
+    }
+    return out_(save_(body.data, body.who, body.rev));
+  }
   return out_({ ok: false, error: 'unknown action' });
 }
 
