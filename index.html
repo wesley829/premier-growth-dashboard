@@ -288,7 +288,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v2.2 · 15 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v2.3 · 15 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -808,8 +808,7 @@ function renderEntry(){
  const w=DATA.weeks[cur];
  const isNow=w.date===todayMonday();
  $("#p-entry").innerHTML=`<div class="sect"><h2 style="font-size:26px">Enter the week</h2><span class="ln"></span>
-   ${isNow?"":`<button class="btn" id="toCurrent">Back to this week</button>`}
-   <button class="btn ghost" id="delWeek">Delete this week</button></div>
+   ${isNow?"":`<button class="btn" id="toCurrent">Back to this week</button>`}</div>
   <div class="weeknote ${isNow?"":"past"}">
    <b>${wLabel(w)}</b>
    <span>${isNow?"This week. Everything typed below is shared with the team within about half a minute."
@@ -896,7 +895,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.2 · 15 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.3 · 15 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});
@@ -934,11 +933,6 @@ document.addEventListener("click",e=>{
  if(rb){const k=rb.parentElement.dataset.k,v=rb.dataset.v;DATA.rag[k]=DATA.rag[k]===v?null:v;mark("rag|"+k);renderAudit();return}
  if(e.target.id==="coreTog"){coreOnly=!coreOnly;renderScorecard();return}
  if(e.target.id==="toCurrent"){ensureCurrentWeek(true);buildWeekSel();renderEntry();return}
- if(e.target.id==="delWeek"){
-  if(DATA.weeks.length<2){alert("Keep at least one week.");return}
-  if(!confirm("Delete "+wLabel(DATA.weeks[cur])+"?"))return;
-  const gone=DATA.weeks[cur].date; removed.add(gone); [...dirty].forEach(k=>{if(k.startsWith(gone+"|"))dirty.delete(k)});
-  DATA.weeks.splice(cur,1);cur=Math.max(0,cur-1);buildWeekSel();renderEntry();return}
 });
 
 $("#clearAll").onclick=()=>{
