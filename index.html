@@ -157,8 +157,14 @@ svg .axis{stroke:var(--line2)}
 svg .tgt{stroke:var(--navy);stroke-dasharray:4 3}
 svg text{font-family:var(--mono);font-size:10px;fill:var(--mute)}
 .spark td{padding:7px 10px 7px 0}
-.entrygroup{border-top:1px solid var(--line);padding-top:16px;margin-top:18px}
-.entrygroup h4{font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px}
+.entrygroup{position:relative;overflow:hidden;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px 16px 16px;margin-top:14px}
+.entrygroup::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--ownbg,var(--line2))}
+.entrygroup h4{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);margin-bottom:12px}
+.who{display:inline-flex;align-items:center;gap:6px;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:1px solid;border-radius:999px;padding:3px 9px 3px 7px;line-height:1.2}
+.who b{display:inline-block;width:7px;height:7px;border-radius:50%}
+.who small{font-family:var(--mono);font-size:9px;letter-spacing:0;text-transform:none;opacity:.75;margin-left:2px}
+.wholeg{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+@media print{.entrygroup{break-inside:avoid}}
 .ragsel{display:flex;gap:4px}
 .ragsel button{width:30px;height:26px;border:1px solid var(--line2);background:var(--paper);cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--mute)}
 .ragsel button:hover{background:var(--tint2)}
@@ -282,7 +288,7 @@ footer .wrapin{max-width:1280px;margin:0 auto;padding:22px var(--pad) 30px;displ
     <div class="sig"><strong>Rob J Williams</strong> &nbsp; Operating Partner &nbsp; Fielding Global<br>
       <span class="small">info@fielding.global &nbsp; fielding.global</span></div>
     <div class="footmeta">Premier Growth Operating System<br>Glow Investment Group &nbsp;·&nbsp; Confidential<br>Prepared for Premier Solutions, Lakeland FL<br>
-      <span style="color:var(--gold)">File v2.1 · 15 Sep 2026</span></div>
+      <span style="color:var(--gold)">File v2.2 · 15 Sep 2026</span></div>
   </div>
 </footer>
 
@@ -369,15 +375,20 @@ const SYS=[
  {id:"mgmt",n:"06",t:"Management & improvement",o:"Courtney + Glow",q:"Are we actually doing what we agreed?"}
 ];
 
+/* One colour per owner, used on the Enter the week tab so it is obvious at a
+   glance who fills in what. Shared groups get a split bar. */
+const OWN={Jon:"#2F6DB5",Brittany:"#7EA46B",Courtney:"#8B5E9E",Aman:"#C0761C"};
+const ownBar=os=>os.length>1?`linear-gradient(90deg,${os.map((o,i)=>`${OWN[o]} ${i/os.length*100}% ${(i+1)/os.length*100}%`).join(",")})`:OWN[os[0]];
+const chip=(o,extra)=>`<span class="who" style="color:${OWN[o]};border-color:${OWN[o]}66;background:${OWN[o]}14"><b style="background:${OWN[o]}"></b>${o}${extra||""}</span>`;
 const FIELDS=[
- {g:"Demand · Jon",f:[["leads","Leads received"],["qualifiedLeads","Qualified leads"],["marketingSpend","Marketing spend ($)"],["marketingRevenue","Revenue from marketing ($)"]]},
- {g:"Conversion · Brittany",f:[["contacted","Contacted"],["booked","Appointments booked"],["cancelled","Cancelled"],["noShow","Did not attend"],["attended","Attended"],["purchased","Purchased"]]},
- {g:"Patients · Brittany / Courtney",f:[["newPatients","New patients"],["returningPatients","Returning patients"],["reactivatedPatients","Reactivated patients"]]},
- {g:"Delivery · Courtney",f:[["slotsAvailable","Appointment slots available"],["slotsUsed","Slots used"],["rebooked","Left with next appointment"]]},
- {g:"Revenue by service line · Aman",f:[["revWeight","Medical weight loss, GLP-1 ($)"],["revHRT","Hormone optimisation, HRT ($)"],["revAes","Aesthetics and skin ($)"],["revWellness","Wellness, IV, injections and labs ($)"]]},
- {g:"Programmes and drafts · Courtney",f:[["programmePatients","Patients on a monthly programme"],["programmeStarts","New clinical programme starts"],["draftStarts","New automatic draft enrolments"],["programmeCancelled","Programmes cancelled"],["draftScheduled","Draft revenue scheduled ($)"],["draftCollected","Draft revenue collected ($)"],["draftFailed","Drafts failed or declined ($)"]]},
- {g:"Costs · Aman",f:[["cogs","COGS ($)"],["providerCost","Provider and clinical cost ($)"],["opex","Operating costs ($)"]]},
- {g:"Management · Courtney",f:[["actionsAgreed","Actions agreed last week"],["actionsCompleted","Actions completed"],["experimentsRun","Experiments running"]]}
+ {g:"Demand",o:["Jon"],f:[["leads","Leads received"],["qualifiedLeads","Qualified leads"],["marketingSpend","Marketing spend ($)"],["marketingRevenue","Revenue from marketing ($)"]]},
+ {g:"Conversion",o:["Brittany"],f:[["contacted","Contacted"],["booked","Appointments booked"],["cancelled","Cancelled"],["noShow","Did not attend"],["attended","Attended"],["purchased","Purchased"]]},
+ {g:"Patients",o:["Brittany","Courtney"],f:[["newPatients","New patients"],["returningPatients","Returning patients"],["reactivatedPatients","Reactivated patients"]]},
+ {g:"Delivery",o:["Courtney"],f:[["slotsAvailable","Appointment slots available"],["slotsUsed","Slots used"],["rebooked","Left with next appointment"]]},
+ {g:"Revenue by service line",o:["Aman"],f:[["revWeight","Medical weight loss, GLP-1 ($)"],["revHRT","Hormone optimisation, HRT ($)"],["revAes","Aesthetics and skin ($)"],["revWellness","Wellness, IV, injections and labs ($)"]]},
+ {g:"Programmes and drafts",o:["Courtney"],f:[["programmePatients","Patients on a monthly programme"],["programmeStarts","New clinical programme starts"],["draftStarts","New automatic draft enrolments"],["programmeCancelled","Programmes cancelled"],["draftScheduled","Draft revenue scheduled ($)"],["draftCollected","Draft revenue collected ($)"],["draftFailed","Drafts failed or declined ($)"]]},
+ {g:"Costs",o:["Aman"],f:[["cogs","COGS ($)"],["providerCost","Provider and clinical cost ($)"],["opex","Operating costs ($)"]]},
+ {g:"Management",o:["Courtney"],f:[["actionsAgreed","Actions agreed last week"],["actionsCompleted","Actions completed"],["experimentsRun","Experiments running"]]}
 ];
 
 function D(w){
@@ -803,9 +814,12 @@ function renderEntry(){
    <b>${wLabel(w)}</b>
    <span>${isNow?"This week. Everything typed below is shared with the team within about half a minute."
       :"You are looking at a past week. Anything you change here edits the record for that week."}</span></div>
+  <div class="wholeg"><span class="eyebrow">Who fills in what</span>
+   ${Object.keys(OWN).map(o=>chip(o,`<small>${FIELDS.filter(g=>g.o.includes(o)).reduce((n,g)=>n+g.f.length,0)} fields</small>`)).join("")}
+   <span class="mu" style="font-size:12.5px">Each block below carries its owner's colour. A split bar means two people share it.</span></div>
   <p class="mu" style="max-width:82ch;font-size:14px;margin-top:12px">Hover any field name to see exactly what belongs in it. Capture at source wherever a system already holds the number. Anything typed in by hand on a Friday afternoon is a candidate for automation, and should be logged as such on the data confidence tab.</p>
   <div class="card" style="margin-top:14px">
-   ${FIELDS.map(gr=>`<div class="entrygroup"><h4>${gr.g}</h4><div class="fldgrid">
+   ${FIELDS.map(gr=>`<div class="entrygroup" style="--ownbg:${ownBar(gr.o)}"><h4>${gr.g}${gr.o.map(o=>chip(o)).join("")}</h4><div class="fldgrid">
      ${gr.f.map(([k,l])=>`<label class="fld"><i${DEFS[k]?` class="hasdef" title="${tip(k)}"`:""}>${l}</i><input type="number" data-w="${k}" value="${w[k]??""}"></label>`).join("")}
    </div></div>`).join("")}
    <div class="entrygroup"><h4>Notes for the week</h4>
@@ -882,7 +896,7 @@ function buildWeekSel(){
  const wk=DATA.weeks.length;
  $("#bannerTxt").innerHTML=`<b>${wk} week${wk===1?"":"s"} on file.</b> Nothing is pre-filled. Every number comes from Premier, and an empty measure means we cannot yet report it. Each owner can fill in their own part, save to file and send it in. Loading files merges them into one dashboard rather than replacing what is already there.
   <span id="saveState" style="display:block;margin-top:5px;color:var(--mute);font-size:12px"></span>
-  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.1 · 15 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
+  <span style="display:block;margin-top:2px;color:var(--dim);font-size:11px">File v2.2 · 15 Sep 2026. If this does not match the version you were sent, refresh the page.</span>`;
  saveState();
 }
 $("#weekSel").addEventListener("change",e=>{cur=+e.target.value;buildWeekSel();renderActive()});

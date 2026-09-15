@@ -79,6 +79,12 @@ stale tab push old numbers over someone's correction.
 
 Remove a week from the terminal with `./premier.py delete 2026-09-28 && ./premier.py push`.
 
+## Owner colours
+
+The Enter the week tab colours each block by who fills it in — Jon blue, Brittany
+sage, Courtney plum, Aman ochre (`OWN` in the HTML). A shared block gets a split
+bar. Give a new group an `o:[...]` list and it picks up its colour automatically.
+
 ## Adding a field
 
 Add the key to `SKEYS`, a label in `FIELDS`, a definition in `DEFS`, and if it is
